@@ -50,4 +50,6 @@ Author
 ------
 
 * Main author: **Sarah Wassermann** -  <sarah.wassermann@student.ulg.ac.be> - <http://wassermann.lu>
-* Contributor: **Pierdomenico Fiadino** - <http://userver.ftw.at/~fiadino>
+* Contributors: 
+    * **Pierdomenico Fiadino** - <http://userver.ftw.at/~fiadino>
+    * **Pedro Casas** - <http://userver.ftw.at/~pcasas/>
