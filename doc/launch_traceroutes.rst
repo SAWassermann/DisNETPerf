@@ -7,7 +7,7 @@ launch_traceroutes.py
 
 .. code:: bash
  
- python launch traceroutes.py -k <API-Key> [-n <IP filename>] [-o <targetIP>] -d <dest IP> [-b <psBox ID>] -f f0, 1g [-m <nb traceroutes>] [-t <interval>] [-s <starttime>] [-p <stoptime>]
+ python launch traceroutes.py -k <API-Key> [-n <IP filename>] [-o <targetIP>] -d <dest IP> [-b <psBox ID>] -f {0,1} [-m <nb traceroutes>] [-t <interval>] [-s <starttime>] [-p <stoptime>]
 
 where:
     - -k <API-Key>: points to a RIPE Atlas API Key with *Measurement creation* permissions. Such a key can easily be created through the Web interface of RIPE Atlas
