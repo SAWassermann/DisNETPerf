@@ -1,4 +1,4 @@
-[![mPlane](http://www.ict-mplane.eu/sites/default/files//public/mplane_final_256x_0.png)](http://www.ict-mplane.eu/)
+![DisNETPerf](https://raw.githubusercontent.com/SAWassermann/DisNETPerf/master/DNP_128.png)
 
 DisNETPerf
 ==============
@@ -46,8 +46,10 @@ Acknowledgement
 This work has been partially funded by the European Commission 
 funded mPlane ICT-318627 project (www.ict-mplane.eu).
 
-Author
-------
+[![mPlane](http://www.ict-mplane.eu/sites/default/files//public/mplane_final_256x_0.png)](http://www.ict-mplane.eu/)
+
+Authors
+-------
 
 * Main author: **Sarah Wassermann** -  <sarah.wassermann@student.ulg.ac.be> - <http://wassermann.lu>
 * Contributors: 
