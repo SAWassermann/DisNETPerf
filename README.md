@@ -38,7 +38,39 @@ Prerequisites
 To run DisNETPerf, Python 2.7 must be installed. You can download Python 2.7 on <https://www.python.org/download/releases/2.7/>
 Furthermore, please fulfill all the prerequisites for the RIPE Atlas Toolbox explained on <https://github.com/pierdom/atlas-toolbox>
 
-DisNETPerf has been tested on Debian 7 with Python 2.7.3.
+DisNETPerf has been tested on Debian 7 with Python 2.7.9.
+
+Papers related to DisNETPerf
+----------------------------
+Several papers about DisNETPerf have been published:
+
+[1] *On the Analysis of Internet Paths with DisNETPerf, a Distributed Paths Performance Analyzer*   
+S. Wassermann, P. Casas, B. Donnet, G. Leduc, M. Mellia   
+in Proceedings of the 10th IEEE Workshop on Network Measurements (WNM), Dubai, United Arab Emirates, 2016
+
+[2] *Towards DisNETPerf: a Distributed Internet Paths Performance Analyzer*   
+S. Wassermann, P. Casas, B. Donnet   
+in Proceedings of the ACM CoNEXT Student Workshop, Heidelberg, Germany, 2015
+
+[3] *Reverse Traceroute with DisNETPerf, a Distributed Internet Paths Performance Analyzer*   
+S. Wassermann, P. Casas   
+in Proceedings of Demonstrations of the 41th Annual IEEE Conference on Local Computer Networks (LCN-Demos 2016), Dubai, United Arab Emirates, 2016
+
+[4] *Unveiling Network and Service Performance Degradation in the Wild with mPlane*   
+P. Casas, P. Fiadino, S. Wassermann, S. Traverso, A. D'Alconzo, E. Tego, F. Matera, M. Mellia   
+in IEEE Communications Magazine, Network Testing Series, 2016, issue 3
+
+**If you use DisNETPerf in your work, please cite [1]** 
+
+```
+@article{disnetperf,
+ author               = {Wassermann, S. and Casas, P. and Donnet, B. and Leduc, G. and Mellia, M.}, 
+ journal              = {{Proc. 10th IEEE Workshop on Network Measurements (WNM)}}, 
+ month                = {November}, 
+ title                = {{On the Analysis of Internet Paths with DisNETPerf, a Distributed Paths Performance Analyzer}}, 
+ year                 = {2016}, 
+ }
+ ```
 
 Acknowledgement
 ---------------
