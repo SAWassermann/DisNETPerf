@@ -21,7 +21,7 @@ where:
     - -s <starttime>: the UNIX timestamp indicating when the first measurement should be issued
     - -p <stoptime>: the UNIX timestamp indicating when the last measurement should be launched
 
-| Please note that, when you want to directly indicate the probes to be used within the file containing the different IP addresses, each line contains the IP address and the ID of the corresponding box (tab-separated).
+| Please note that, when you want to directly indicate the probes to be used within the file containing the different IP addresses, each line contains the IP address and the ID of the corresponding box (tab-separated). If you want to locate the closest box first, each line should only contain an IP address.
 
 | Moreover, DisNETPerf is quite flexible when it comes to the parameters -m, -t , and -s. Indeed, the following combinations are possible:
 
