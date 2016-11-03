@@ -12,6 +12,7 @@ import argparse
 import subprocess
 import datetime
 import time
+import math
 import find_psbox as ps
 
 #global vars - begin
@@ -31,7 +32,7 @@ def launch_scheduled_traceroutes(destIP, probes, start, stop, interval, numberOf
     is indicated, the number of traceroutes will be ignored
     :param destIP:              the IP towards which tracroutes should be launched
     :param probes:              the list of RIPE Atlas probes which should be used as sources
-    :param start:               the start time (UNIX timestamp) at which first tracroute should be launched
+    :param start:               time (UNIX timestamp) at which first traceroute should be launched
     :param stop:                time (UNIX timestamp) at which no more traceroutes should be launched
     :param interval:            time between 2 consecutive traceroutes (in seconds)
     :param numberOfTraceroutes: number of traceroutes to be scheduled
@@ -54,7 +55,7 @@ def launch_scheduled_traceroutes(destIP, probes, start, stop, interval, numberOf
                     if start:
                         startTime = start
                     else:
-                        startTime = time.time()
+                        startTime = int(math.ceil(time.time())) + 1
                     if interval:
                         i = interval
                     else:
@@ -68,7 +69,7 @@ def launch_scheduled_traceroutes(destIP, probes, start, stop, interval, numberOf
                                                             destIP, '--probe-list', ','.join(probesToUse)])
                     nbOfConsecutiveFailures = 0
                 elif numberOfTraceroutes and interval and not start:
-                    startTime = time.time()
+                    startTime = int(math.ceil(time.time())) + 1
                     udmCreateInfo = subprocess.check_output(['../contrib/udm-create.pl', '--api', API_KEY, '--type',  'traceroute', '--target',
                                                          destIP, '--probe-list', ','.join(probesToUse), '--interval', str(interval), '--start', str(startTime),
                                                          '--stop', str(startTime + numberOfTraceroutes * interval)])
@@ -77,7 +78,7 @@ def launch_scheduled_traceroutes(destIP, probes, start, stop, interval, numberOf
                     if start:
                         startTime = start
                     else:
-                        startTime = time.time()
+                        startTime = int(math.ceil(time.time())) + 1
                     udmCreateInfo = subprocess.check_output(['../contrib/udm-create.pl', '--api', API_KEY, '--type',  'traceroute', '--target',
                                                             destIP, '--probe-list', ','.join(probesToUse), '--interval', str(INTERVAL_DEFAULT),
                                                             '--start', str(startTime), '--stop', str(startTime + numberOfTraceroutes * INTERVAL_DEFAULT)])
