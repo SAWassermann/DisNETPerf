@@ -19,18 +19,18 @@ get_traceroute_results.py
 Output
 ......
 
-*get_traceroute_results.py* creates a file in the folder *output*. The naming scheme of such an output-file is ``<timestamp>_psbox.txt`` where ``<timestamp>`` refers to the timestamp
+*get_traceroute_results.py* creates a file in the folder *output*. The naming scheme of such an output-file is ``<timestamp>_scheduled_traceroutes.txt`` where ``<timestamp>`` refers to the timestamp
 indicating when ``get_traceroute_results.py`` was launched.
 In this file, each measurement is represented in the following way:
 
 | ``PROBEID: <ID>``
 | ``TIMESTAMP: <TS>``
 | ``NBHOPS: <N>``
-| ``HOP: <IP 1> [<RTT>]``
+| ``HOP: <IP 1> [<avg RTT>]``
 | ``...``
-| ``HOP: <IP N> [<RTT>]``
+| ``HOP: <IP N> [<avg RTT>]``
 | ``ASPATH: <ASHOP 1>...<ASHOP X>``
 | ``POPPATH: <POPHOP 1>...<POPHOP Y>``
 | ``IPPATH: <IPHOP 1>...<IPHOP Z>``
 
-<IP X> either reports the IP address of the encountered router interface or is replaced by NA TR. NA TR indicates that the IP address of the router could not be inferred (and therefore the RTT could not be computed). ASPATH, POPPATH, and IPPATH indicate the paths at the three considered levels. Regarding the AS hops, we display NA MAP when the IP address could not be mapped to an AS, and NA TR when it is unknown.
+<IP X> either reports the IP address of the encountered router interface or is replaced by NA\_TR. NA\_TR indicates that the IP address of the router could not be inferred (and therefore the average RTT could not be computed). ASPATH, POPPATH, and IPPATH indicate the paths at the three considered levels. Regarding the AS hops, we display NA\_MAP when the IP address could not be mapped to an AS, and NA\_TR when the IP address is unknown.
