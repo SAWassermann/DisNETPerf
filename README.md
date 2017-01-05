@@ -8,10 +8,11 @@ Furthermore, once the closest RIPE Atlas box has been located, DisNETPerf permit
 
 RIPE Atlas is a large active measurement network composed of geographically distributed probes used to measure Internet connectivity and reachability.
 
-Given a certain server, with IP address IPs, and a target customer, with IP address IPd, DisNETPerf locates the closest RIPE Atlas probe to IPs, namely IPc, and periodically runs traceroute from IPc to IPd, collecting different path performance metrics such as RTT per hop, end-to-end RTT, etc. This data collected is then used to troubleshoot ''reverse'' paths, from the server to the target customer.
+Given a certain server, with IP address IPs, and a target customer, with IP address IPd, DisNETPerf locates the closest RIPE Atlas probe to IPs, namely IPc, and periodically runs traceroute from IPc to IPd, collecting different path performance metrics such as RTT per hop, end-to-end RTT, etc. The collected data is then used to troubleshoot ''reverse'' paths, from the server to the target customer.
 
 To select IPc, DisNETPerf makes use of a combined topological and latency-based approach, using standard pings and BGP routing tables. In a nutshell, it locates the RIPE Atlas probe with minimum RTT to the selected server IPs, among a set of prefiltered IPc candidates, which are located at either the same AS of IPs or in the neighbor ASes.
 
+The complete documentation can be found in the .rst files located in the folder **docs** or simply on [Read the Docs](http://disnetperf.readthedocs.io/en/latest/index.html).
 #### List of runnable scripts
 
 - **find_psbox.py**: locate the closest boxes for a set of IPs
@@ -26,7 +27,7 @@ All the scripts whose names are prefixed with **AUX_** cannot be run but are use
 
 DisNETPerf is structured into 7 folders:
 - **contrib**: contains the RIPE Atlas Toolbox developed by **Pierdomenico Fiadino**. DisNETPerf heavily relies on this toolbox
-- **doc**: contains .txt-files explaining how to use DisNETPerf
+- **docs**: contains .rst files explaining how to use DisNETPerf
 - **input**: should include the files used as input for DisNETPerf
 - **lib**: contains datasets needed in order to locate the closest RIPE Atlas boxes
 - **logs**: includes log-files
