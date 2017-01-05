@@ -12,14 +12,15 @@ RIPE Atlas is a large active measurement network composed of geographically dist
 
 **How DisNETPerf works:**
 
-Given a certain server, with IP address IPs, and a target customer, with IP address IPd, DisNETPerf locates the closest RIPE Atlas probe to IPs, namely IPc, and periodically runs traceroute from IPc to IPd, collecting different path performance metrics such as RTT per hop, end-to-end RTT, etc. This data collected is then used to troubleshoot ''reverse'' paths, from the server to the target customer.
+Given a certain server, with IP address IPs, and a target customer, with IP address IPd, DisNETPerf locates the closest RIPE Atlas probe to IPs, namely IPc, and periodically runs traceroute from IPc to IPd, collecting different path performance metrics such as RTT per hop, end-to-end RTT, etc. The collected data is then used to troubleshoot ''reverse'' paths, from the server to the target customer.
 To select IPc, DisNETPerf makes use of a combined topological and latency-based approach, using standard pings and BGP routing tables. In a nutshell, it locates the RIPE Atlas probe with minimum RTT to the selected server IPs, among a set of prefiltered IPc candidates, which are located at either the same AS of IPs or in the neighbor ASes.
 
 Contents of the documentation:
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 5
    
+   installation
    find_psbox
    launch_traceroutes
    get_traceroute_results
