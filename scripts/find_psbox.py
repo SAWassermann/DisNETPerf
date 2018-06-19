@@ -8,6 +8,8 @@ To view a copy of this license, visit http://creativecommons.org/licenses/by-nd/
 PO Box 1866, Mountain View, CA 94042, USA.
 """
 
+from __future__ import print_function
+
 import argparse
 import datetime
 import time
@@ -66,7 +68,7 @@ def getSmallestPingProbe(measurementIDsDict, outputFileName):
             try:
                 resultInfo = subprocess.check_output(['../contrib/udm-result.pl', '--udm', udm])
             except subprocess.CalledProcessError:
-                print "Can't get udm-results...\n"
+                print("Can't get udm-results...\n")
                 break
 
             if not resultInfo:
@@ -116,13 +118,13 @@ def find_psboxes(IPs, verbose, recovery):
     IPsToMeasurementIDs = dict()
     IPsAlreadyAnalysed = set()
 
-    if recovery: # recovery-mode enabled
+    if recovery:  # recovery-mode enabled
         # recover ID-to-AS mapping that has been done so far - begin
         try:
             ASMap = open('../logs/ID_To_AS.log', 'r')
         except IOError:
             if verbose:
-                print "error: Could not open/create file '../logs/ID_To_AS.log'\n"
+                print("error: Could not open/create file '../logs/ID_To_AS.log'\n")
             return None
 
         for line in ASMap:
@@ -138,7 +140,7 @@ def find_psboxes(IPs, verbose, recovery):
             logFile = open('../logs/current_ping_measurementIDs.log', 'r')
         except IOError:
             if verbose:
-                print "error: Could not open file '../logs/current_ping_measurementIDs.log'\n"
+                print("error: Could not open file '../logs/current_ping_measurementIDs.log'\n")
             return None
 
         cnt = 0
@@ -163,22 +165,22 @@ def find_psboxes(IPs, verbose, recovery):
             ASMap = open('../logs/ID_To_AS.log', 'w') # clear content of ID-to-AS log
         except IOError:
             if verbose:
-                print "error: Could not open/create file '../logs/ID_To_AS.log'\n"
+                print("error: Could not open/create file '../logs/ID_To_AS.log'\n")
             return None
         ASMap.close()
 
     # open/create output-file - begin
     try:
         if recovery:
-            output = open('../output/' + timeStamp + '_psbox.txt', 'a', 1)
+            output = open('../output/' + str(timeStamp) + '_psbox.txt', 'a', 1)
         else:
             output = open('../output/' + currentTime + '_psbox.txt', 'w', 1)
     except IOError:
         if verbose:
             if recovery:
-                print "error: Could not open/create file '../output/" + timeStamp  + "_psbox.txt'\n"
+                print("error: Could not open/create file '../output/" + str(timeStamp) + "_psbox.txt'\n")
             else:
-                print "error: Could not open/create file '../output/" + currentTime  + "_psbox.txt'\n"
+                print("error: Could not open/create file '../output/" + currentTime + "_psbox.txt'\n")
         return None
     # open/create output-file - end
 
@@ -191,7 +193,7 @@ def find_psboxes(IPs, verbose, recovery):
             logFile.write(currentTime + '\n')
     except IOError:
         if verbose:
-            print "error: Could not open/create file '../logs/current_ping_measurementIDs.log'\n"
+            print("error: Could not open/create file '../logs/current_ping_measurementIDs.log'\n")
         return None
     # open/create log-file - end
 
@@ -200,7 +202,7 @@ def find_psboxes(IPs, verbose, recovery):
         plFile = open('../lib/probelist.txt', 'r')
     except IOError:
         if verbose:
-            print "error: Could not open file '../lib/probelist.txt'\n"
+            print("error: Could not open file '../lib/probelist.txt'\n")
         output.close()
         logFile.close()
         return None
@@ -218,7 +220,7 @@ def find_psboxes(IPs, verbose, recovery):
 
     IPToASMap = IPToAS.mapIPtoAS(targetIPs, '../lib/GeoIPASNum2.csv', True)
 
-    if IPToASMap == None:
+    if IPToASMap is None:
         output.close()
         logFile.close()
         return None
@@ -232,7 +234,7 @@ def find_psboxes(IPs, verbose, recovery):
         IPsAlreadyAnalysed.add(IP)
 
         if verbose:
-            print 'Starting to do measurements for IP: ' + IP + '...\n'
+            print('Starting to do measurements for IP: ' + IP + '...\n')
         AS = IPToASMap[IP]
 
         if AS == 'NA_MAP':
@@ -247,7 +249,7 @@ def find_psboxes(IPs, verbose, recovery):
                 ASMap = open('../logs/ID_To_AS.log', 'a', 0)
             except IOError:
                 if verbose:
-                    print "error: Could not open/create file '../logs/ID_To_AS.log'\n"
+                    print("error: Could not open/create file '../logs/ID_To_AS.log'\n")
                 output.close()
                 logFile.close()
                 return None
@@ -280,7 +282,7 @@ def find_psboxes(IPs, verbose, recovery):
             # if not, look at the neighbour-ASes
             if not probeListInfo:
                 neighbours = pa.findASNeighbourhood(IPToASMap[IP], True)
-                if neighbours == None:
+                if neighbours is None:
                     output.close()
                     logFile.close()
                     return None
@@ -309,7 +311,7 @@ def find_psboxes(IPs, verbose, recovery):
 
             if probeListInfo: # we have found neighbour-probes
                 probes = pa.parseProbeListOutput(probeListInfo, True, probeToASMap)
-                if probes == None:
+                if probes is None:
                     output.close()
                     logFile.close()
                     return None
@@ -322,7 +324,7 @@ def find_psboxes(IPs, verbose, recovery):
         if AS != 'NA_MAP':
             probes = encounteredASes[AS]
 
-        if not probes: # if no probes in neighbourhood, use randomly selected probes
+        if not probes:  # if no probes in neighbourhood, use randomly selected probes
             additionalInfoAboutMeasurements[IP] = '[RANDOM]'
 
             idx = random.sample(range(len(probeList)), 100)
@@ -335,7 +337,7 @@ def find_psboxes(IPs, verbose, recovery):
                 ASMap = open('../logs/ID_To_AS.log', 'a', 0)
             except IOError:
                 if verbose:
-                    print "error: Could not open/create file '../logs/ID_To_AS.log'\n"
+                    print("error: Could not open/create file '../logs/ID_To_AS.log'\n")
                 output.close()
                 logFile.close()
                 return None
@@ -390,21 +392,21 @@ def find_psboxes(IPs, verbose, recovery):
 
     # waiting for ping-measurements to finish
     if verbose:
-        print 'Waiting for ping-measurements to finish...\n'
+        print('Waiting for ping-measurements to finish...\n')
     status = cm.checkMeasurements(measurementIDs, True)
-    if status == None:
+    if status is None:
         return None
 
     while not status:
         time.sleep(180)
         status = cm.checkMeasurements(measurementIDs, True)
 
-        if status == None:
+        if status is None:
             output.close()
             return None
 
     if verbose:
-        print 'Computing closest RIPE Atlas box...\n'
+        print('Computing closest RIPE Atlas box...\n')
 
     results = getSmallestPingProbe(IPsToMeasurementIDs, output)
 
@@ -440,15 +442,15 @@ if __name__ == '__main__':
     # if an IP is specified, we always go for the IP
     if arguments['targetIP']:
         targetIP = arguments['targetIP']
-        if checkIP(targetIP) == None:
-            print 'error: The indicated IPs must be in the format <X.X.X.X>!\n'
+        if checkIP(targetIP) is None:
+            print('error: The indicated IPs must be in the format <X.X.X.X>!\n')
             exit(3)
         targetIPs = [targetIP]
     else:   # check file
         try:
             IPfile = open('../input/' + arguments['filename'], 'r')
         except IOError:
-            print "error: Could not open file '../input/" + arguments['filename'] + "'\n"
+            print("error: Could not open file '../input/" + arguments['filename'] + "'\n")
             exit(2)
 
         # load IPs from file
@@ -456,8 +458,8 @@ if __name__ == '__main__':
         for line in IPfile:
             l = line.rstrip('\r\n')
             if l and not l.isspace():
-                if checkIP(l) == None:
-                    print 'error: The indicated IPs must be in the format <X.X.X.X>!\n'
+                if checkIP(l) is None:
+                    print('error: The indicated IPs must be in the format <X.X.X.X>!\n')
                     IPfile.close()
                     exit(3)
                 targetIPs.append(l)
@@ -466,7 +468,7 @@ if __name__ == '__main__':
     # launch measurements and get psboxes
     if arguments['recovery'] and arguments['recovery'] == 1:
         if not os.path.exists('../logs/current_ping_measurementIDs.log'):
-            print "error: Could not launch recovery-mode!\n"
+            print("error: Could not launch recovery-mode!\n")
             exit(5)
         psBoxMap = find_psboxes(targetIPs, True, True)
     else:
@@ -475,8 +477,8 @@ if __name__ == '__main__':
     if psBoxMap != None and psBoxMap:
         for IP in targetIPs:
             if IP in psBoxMap:
-                print IP + '\t' + '\t'.join(psBoxMap[IP]) + '\t' + additionalInfoAboutMeasurements[IP] + '\n'
-    if psBoxMap == None:
+                print(IP + '\t' + '\t'.join(psBoxMap[IP]) + '\t' + additionalInfoAboutMeasurements[IP] + '\n')
+    if psBoxMap is None:
         exit(4)
     else:
         exit(0)

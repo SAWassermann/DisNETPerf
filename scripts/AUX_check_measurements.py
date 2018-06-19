@@ -6,6 +6,8 @@ To view a copy of this license, visit http://creativecommons.org/licenses/by-nd/
 PO Box 1866, Mountain View, CA 94042, USA.
 """
 
+from __future__ import print_function
+
 import subprocess
 
 
@@ -34,7 +36,7 @@ def checkMeasurements(measurementIDs, verbose):
                 # if 5 consecutive checks failed, abort
                 if nbOfConsecutiveFailures == 5:
                     if verbose:
-                        print 'error: Could not check measurement-status!\n'
+                        print('error: Could not check measurement-status!\n')
                     return None
 
         runningFlags = ["'name' => 'Scheduled'", "'name' => 'Ongoing'", "'name' => 'Specified'"]

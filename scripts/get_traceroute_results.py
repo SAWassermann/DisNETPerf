@@ -8,10 +8,13 @@ To view a copy of this license, visit http://creativecommons.org/licenses/by-nd/
 PO Box 1866, Mountain View, CA 94042, USA.
 """
 
+from __future__ import print_function
+
 import argparse
 import subprocess
 import datetime
 import time
+
 import AUX_IP_to_AS_map as parseIP
 import AUX_get_RouteViews_data as rv
 
@@ -135,7 +138,7 @@ class TracerouteMeasurement:
         try:
             pointerToFile = open('../output/' + currentTime + '_scheduled_traceroutes.txt', 'a', 0)
         except IOError:
-            print "error: Could not open/create file '../output/" + currentTime + "'_scheduled_traceroutes.txt'\n"
+            print("error: Could not open/create file '../output/" + currentTime + "'_scheduled_traceroutes.txt'\n")
             return None
 
         pointerToFile.write("PROBEID:\t" + self.probeID + '\n')
@@ -184,7 +187,7 @@ def loadIPToPoPMapping(filename):
     try:
         PoPFile = open(filename, 'r')
     except IOError:
-        print "error: Could not open file '" + filename + "'!\n"
+        print("error: Could not open file '" + filename + "'!\n")
         return None
 
     for line in PoPFile:
@@ -209,7 +212,7 @@ def retrieve_traceroute_results(filename, verbose):
     try:
         udmFile = open(filename, 'r')
     except IOError:
-        print "error: Could not open '" + filename + "'!\n"
+        print("error: Could not open '" + filename + "'!\n")
         return None
 
     measurementsToAnalyse = list()
@@ -236,7 +239,7 @@ def retrieve_traceroute_results(filename, verbose):
                         timestamp = l[0]
 
                         if verbose:
-                            print 'Analysing traceroute from ' + srcIP + ' to ' + dstIP + '...\n'
+                            print('Analysing traceroute from ' + srcIP + ' to ' + dstIP + '...\n')
 
                         currentMeasurement = TracerouteMeasurement()
                         currentMeasurement.addProbeID(probeID)
@@ -269,11 +272,11 @@ def retrieve_traceroute_results(filename, verbose):
 
     # We will do the IP2AS-mapping and store the results to a file
     IPToASMapping = parseIP.mapIPtoAS(IPsToAnalyse, '../lib/GeoIPASNum2.csv', verbose)
-    if IPToASMapping == None:
+    if IPToASMapping is None:
         return None
 
     if verbose:
-        print 'Saving results to file...\n'
+        print('Saving results to file...\n')
 
     currentTime = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-%H-%M-%S')
     for measurement in measurementsToAnalyse:

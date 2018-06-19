@@ -13,6 +13,7 @@ import subprocess
 import datetime
 import time
 import math
+
 import find_psbox as ps
 
 
@@ -44,7 +45,7 @@ def launch_scheduled_traceroutes(destIP, probes, start, stop, interval, numberOf
     try:
         logFile = open('../logs/' + currentTime + '_current_scheduled_traceroutes.log', 'w', 0)
     except IOError:
-        print "error: Could not open/create '../logs/" + currentTime + "_current_scheduled_traceroutes.log'!\n"
+        print("error: Could not open/create '../logs/" + currentTime + "_current_scheduled_traceroutes.log'!\n")
         return
     nbOfConsecutiveFailures = 0
     giveUp = False
@@ -165,7 +166,7 @@ if __name__ == '__main__':
             closestBoxMap = ps.find_psboxes([targetIP], True)
             if closestBoxMap:
                 closestBox = closestBoxMap[targetIP]
-            elif closestBoxMap == None:
+            elif closestBoxMap is None:
                 exit(3)
             else:
                 exit(0)
@@ -174,7 +175,7 @@ if __name__ == '__main__':
         try:
             IPfile = open('../input/' + arguments['filename'], 'r')
         except IOError:
-            print "error: Could not open file '../input/" + arguments['filename'] + "'\n"
+            print("error: Could not open file '../input/" + arguments['filename'] + "'\n")
             exit(2)
 
         closestBox = set()
@@ -186,12 +187,12 @@ if __name__ == '__main__':
             if l and not l.isspace():
                 data = l.split('\t')
                 if flag == 1 and len(data) < 2:
-                    print 'error: You must specify a RIPE Atlas box to use when -f is set to 1, please refer to ' \
-                          'the manual\n'
+                    print('error: You must specify a RIPE Atlas box to use when -f is set to 1, please refer to '
+                          'the manual\n')
                     IPfile.close()
                     exit(3)
-                if ps.checkIP(data[0]) == None:
-                    print 'error: The indicated IPs must be in the format <X.X.X.X> where X is an integer >= 0!\n'
+                if ps.checkIP(data[0]) is None:
+                    print('error: The indicated IPs must be in the format <X.X.X.X> where X is an integer >= 0!\n')
                     IPfile.close()
                     exit(4)
                 targetIPs.append(data[0])
@@ -204,7 +205,7 @@ if __name__ == '__main__':
             if closestBoxMap:
                 for key in closestBoxMap:
                     closestBox.add(closestBoxMap[key][0])
-            elif closestBoxMap == None:
+            elif closestBoxMap is None:
                 exit(3)
             else:
                 exit(0)

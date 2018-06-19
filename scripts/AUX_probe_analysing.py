@@ -6,6 +6,9 @@ To view a copy of this license, visit http://creativecommons.org/licenses/by-nd/
 PO Box 1866, Mountain View, CA 94042, USA.
 """
 
+from __future__ import print_function
+
+
 def parseProbeListOutput(output, verbose, map=None):
     """
     Parses the output of the script 'probe-list.pl', i.e. the script which retrieves a list of RIPE Atlas probes, and
@@ -24,7 +27,7 @@ def parseProbeListOutput(output, verbose, map=None):
             ASMap = open('../logs/ID_To_AS.log', 'a', 0)
         except IOError:
             if verbose:
-                print "error: Could not open file '../logs/ID_To_AS.log'\n"
+                print("error: Could not open file '../logs/ID_To_AS.log'\n")
             return None
 
         for line in resultLines:
@@ -50,7 +53,7 @@ def findASNeighbourhood(ASN, verbose):
         file = open('../lib/ASNeighbours.txt', 'r')
     except:
         if verbose:
-            print "error: Could not open file '../lib/ASNeighbours.txt'\n"
+            print("error: Could not open file '../lib/ASNeighbours.txt'\n")
         return None
 
     neighbours = set()
