@@ -36,7 +36,7 @@ def parseProbeListOutput(output, verbose, map=None):
             if map != None: #save AS to dict
                 map[elements[0]] = elements[3]
         ASMap.close()
-    return [probes[i:i + 500] for i in range(0, len(probes), 500)]
+    return [probes[i:i + 500] for i in range(len(probes), 500)]
 
 
 def findASNeighbourhood(ASN, verbose):

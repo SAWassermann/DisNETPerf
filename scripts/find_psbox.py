@@ -237,7 +237,7 @@ def find_psboxes(IPs, verbose, recovery):
 
         if AS == 'NA_MAP':
             additionalInfoAboutMeasurements[IP] = '[NO_AS]'
-            idx = random.sample(range(0, len(probeList)), 100)
+            idx = random.sample(range(len(probeList)), 100)
             selectedProbes = [probeList[i][0] for i in idx]
 
             for i in idx:
@@ -255,7 +255,7 @@ def find_psboxes(IPs, verbose, recovery):
                 ASMap.write(probeList[i][0] + '\t' + probeList[i][1] + '\n')
             ASMap.close()
 
-            probes = [selectedProbes[i:i + 500] for i in range(0, len(selectedProbes), 500)]
+            probes = [selectedProbes[i:i + 500] for i in range(len(selectedProbes), 500)]
 
         elif not AS in encounteredASes: # check whether we have already retrieved probes for this AS
             # check whether there are probes in IP's AS
@@ -325,7 +325,7 @@ def find_psboxes(IPs, verbose, recovery):
         if not probes: # if no probes in neighbourhood, use randomly selected probes
             additionalInfoAboutMeasurements[IP] = '[RANDOM]'
 
-            idx = random.sample(range(0, len(probeList)), 100)
+            idx = random.sample(range(len(probeList)), 100)
             selectedProbes = [probeList[i][0] for i in idx]
 
             for i in idx:
@@ -343,7 +343,7 @@ def find_psboxes(IPs, verbose, recovery):
                 ASMap.write(probeList[i][0] + '\t' + probeList[i][1] + '\n')
             ASMap.close()
 
-            probes = [selectedProbes[i:i + 500] for i in range(0, len(selectedProbes), 500)]
+            probes = [selectedProbes[i:i + 500] for i in range(len(selectedProbes), 500)]
         elif AS != 'NA_MAP':
             additionalInfoAboutMeasurements[IP] = '[OK]'
 

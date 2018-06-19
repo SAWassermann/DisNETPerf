@@ -39,7 +39,7 @@ def launch_scheduled_traceroutes(destIP, probes, start, stop, interval, numberOf
     :param interval:            time between 2 consecutive traceroutes (in seconds)
     :param numberOfTraceroutes: number of traceroutes to be scheduled
     """
-    probes = [probes[i:i + 500] for i in range(0, len(probes), 500)]
+    probes = [probes[i:i + 500] for i in range(len(probes), 500)]
     currentTime = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-%H-%M-%S')
     try:
         logFile = open('../logs/' + currentTime + '_current_scheduled_traceroutes.log', 'w', 0)
