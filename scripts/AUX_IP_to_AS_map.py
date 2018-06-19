@@ -8,14 +8,16 @@ PO Box 1866, Mountain View, CA 94042, USA.
 
 import csv
 
+
 def IPToInt(ip):
     """
     Returns the integer corresponding th the IP address <ip>
     :param ip:  a string representing an IP
     :return:    <ip> converted into an integer
     """
-    parts = map(int, ip.split('.'))
+    parts = list(map(int, ip.split('.')))
     return (16777216 * parts[0]) + (65536 * parts[1]) + (256 * parts[2]) + parts[3]
+
 
 def mapIPtoAS(IPListArg, IPtoASFilename, verbose):
     """
@@ -52,7 +54,7 @@ def mapIPtoAS(IPListArg, IPtoASFilename, verbose):
                 ASdata = mapping[2].split()
                 IPtoASMap[ip] = ASdata[0][2:]
                 break
-            elif lowerbound > IP: # no match found!
+            elif lowerbound > IP:  # no match found!
                 IPtoASMap[ip] = 'NA_MAP'
                 break
             else:

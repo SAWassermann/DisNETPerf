@@ -19,6 +19,7 @@ import AUX_IP_to_AS_map as IPToAS
 import AUX_probe_analysing as pa
 import AUX_check_measurements as cm
 
+
 # constants - begin
 # should define the KEY to run RIPE Atlas (Key to create a new user defined measurement)
 API_KEY = 'XXXXXXXXXXXXXXXXXXXXXXXX'
@@ -29,6 +30,7 @@ probeToASMap = dict()
 additionalInfoAboutMeasurements = dict()
 # global vars - end
 
+
 def checkIP(ip):
     """
     Checks whether the IP address <ip> has the correct format
@@ -36,10 +38,11 @@ def checkIP(ip):
     :return: <ip> converted into an integer, None if <ip> not a valid IP
     """
     try:
-        parts = map(int, ip.split('.'))
+        parts = list(map(int, ip.split('.')))
         return (16777216 * parts[0]) + (65536 * parts[1]) + (256 * parts[2]) + parts[3]
     except ValueError:
         return None
+
 
 def getSmallestPingProbe(measurementIDsDict, outputFileName):
     """
@@ -94,6 +97,7 @@ def getSmallestPingProbe(measurementIDsDict, outputFileName):
         IPToPSBoxMap[IP] = (probeMinRTT[0], probeMinRTT[1], probeToASMap[probeMinRTT[0]], str(probeMinRTT[2]))
 
     return IPToPSBoxMap
+
 
 def find_psboxes(IPs, verbose, recovery):
     """
@@ -362,13 +366,13 @@ def find_psboxes(IPs, verbose, recovery):
                             IPsToMeasurementIDs[IP].append(udmCreateInfo)
                         measurementIDs.add(udmCreateInfo)
                     break
-                except subprocess.CalledProcessError, e: # maybe too many measurements running?
+                except subprocess.CalledProcessError:  # maybe too many measurements running?
                     nbOfConsecutiveFailures += 1
                     time.sleep(180)
 
                     # if 5 consecutive measurement-attempts fail, give up
                     if nbOfConsecutiveFailures == 5:
-                        IPsToMeasurementIDs.pop(IP, None) # delete this entry; should not be analyzed
+                        IPsToMeasurementIDs.pop(IP, None)  # delete this entry; should not be analyzed
                         giveUp = True
                         break
             if giveUp:

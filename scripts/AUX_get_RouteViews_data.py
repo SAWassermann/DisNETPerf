@@ -10,6 +10,7 @@ PO Box 1866, Mountain View, CA 94042, USA.
 
 import os
 
+
 def getASPath(start, end):
     """
     Tries to find an ASPath between the ASes <start> and <end> through RouteViews data
@@ -29,4 +30,4 @@ def getASPath(start, end):
             file.close()
             return pathList
     file.close()
-    return  list()
+    return list()

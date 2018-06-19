@@ -15,11 +15,13 @@ import time
 import math
 import find_psbox as ps
 
+
 #global vars - begin
 # should define the KEY to run RIPE Atlas (Key to create a new user defined measurement)
 API_KEY = 'XXXXXXXXXXXXXXXXXXXXXXXX'
 INTERVAL_DEFAULT = 600
 #global vars - end
+
 
 def launch_scheduled_traceroutes(destIP, probes, start, stop, interval, numberOfTraceroutes):
     """
@@ -101,6 +103,7 @@ def launch_scheduled_traceroutes(destIP, probes, start, stop, interval, numberOf
     if not giveUp:
         logFile.write('\t'.join(measurementIDs) + '\t' + destIP + '\n')
     logFile.close()
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Launch traceroutes from the closest RIPE Atlas boxes'

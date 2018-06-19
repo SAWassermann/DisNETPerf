@@ -15,6 +15,7 @@ import time
 import AUX_IP_to_AS_map as parseIP
 import AUX_get_RouteViews_data as rv
 
+
 # global vars - begin
 
 # keys: (start, end) tuple where start is the beginning of a path and end the end of the path
@@ -23,6 +24,7 @@ hiddenTraceroutePathParts = dict()
 
 IPToPoPMapping = dict()
 # global vars - end
+
 
 class TracerouteMeasurement:
     """
@@ -85,7 +87,7 @@ class TracerouteMeasurement:
         endHiddenPathAS = ''
 
         while idx < ASPath.__len__():
-            if ASPath[idx] != 'NA_TR' and ASPath[idx] != 'NA_MAP': # Is this AS-hop unknown?
+            if ASPath[idx] != 'NA_TR' and ASPath[idx] != 'NA_MAP':  # Is this AS-hop unknown?
                 if beginHiddenPathAS != '':
                     endHiddenPathAS = ASPath[idx]
                     endHiddenPathIdx = idx
@@ -100,7 +102,7 @@ class TracerouteMeasurement:
                             hiddenPart = hiddenTraceroutePathParts[(beginHiddenPathAS, endHiddenPathAS)]
                     beginHiddenPathAS = ''
                     endHiddenPathAS = ''
-                    if hiddenPart.__len__() > 0: # Did we find something useful?
+                    if hiddenPart.__len__() > 0:  # Did we find something useful?
                         ASPath = ASPath[:beginHiddenPathIdx] + hiddenPart + ASPath[endHiddenPathIdx + 1:]
                         idx = beginHiddenPathIdx
                     else:
@@ -137,7 +139,7 @@ class TracerouteMeasurement:
             return None
 
         pointerToFile.write("PROBEID:\t" + self.probeID + '\n')
-        pointerToFile.write("TIMESTAMP:\t" + self.timestamp + '\n')
+        pointerToFile.write("TIMESTAMP:\t" + str(self.timestamp) + '\n')
         pointerToFile.write("NBHOPS:\t" + str(self.nbHops) + '\n')
 
         ASes = list()
@@ -171,6 +173,7 @@ class TracerouteMeasurement:
 
         pointerToFile.close()
 
+
 def loadIPToPoPMapping(filename):
     """
     Fills the dictionary <IPToPoPMapping>. A key corresponds to an IP and the value to the PoP in which it is located.
@@ -191,6 +194,7 @@ def loadIPToPoPMapping(filename):
             IPToPoPMapping[pair[0]] = pair[1]
     PoPFile.close()
     return True
+
 
 def retrieve_traceroute_results(filename, verbose):
     """

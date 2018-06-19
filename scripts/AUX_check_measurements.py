@@ -7,7 +7,7 @@ PO Box 1866, Mountain View, CA 94042, USA.
 """
 
 import subprocess
-from time import sleep
+
 
 def checkMeasurements(measurementIDs, verbose):
     """
@@ -31,7 +31,7 @@ def checkMeasurements(measurementIDs, verbose):
             except subprocess.CalledProcessError:
                 nbOfConsecutiveFailures += 1
 
-                # if 5 consecutive checks failed, abord
+                # if 5 consecutive checks failed, abort
                 if nbOfConsecutiveFailures == 5:
                     if verbose:
                         print 'error: Could not check measurement-status!\n'
