@@ -26,7 +26,7 @@ def getASPath(start, end):
 
     for line in file:
         pathList = line.rstrip('\r\n').split()
-        if pathList[pathList.__len__() - 1] == end:
+        if pathList[-1] == end:
             file.close()
             return pathList
     file.close()

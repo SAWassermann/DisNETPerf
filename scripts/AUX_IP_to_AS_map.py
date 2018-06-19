@@ -42,7 +42,7 @@ def mapIPtoAS(IPListArg, IPtoASFilename, verbose):
     IPList.sort(key=IPToInt)
 
     currentIndex = 0
-    nbOfMappings = IPRangeData.__len__()
+    nbOfMappings = len(IPRangeData)
 
     for ip in IPList:
         IP = IPToInt(ip)

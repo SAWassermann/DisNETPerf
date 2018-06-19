@@ -185,7 +185,7 @@ if __name__ == '__main__':
             l = line.rstrip('\r\n')
             if l and not l.isspace():
                 data = l.split('\t')
-                if flag == 1 and data.__len__() < 2:
+                if flag == 1 and len(data) < 2:
                     print 'error: You must specify a RIPE Atlas box to use when -f is set to 1, please refer to ' \
                           'the manual\n'
                     IPfile.close()

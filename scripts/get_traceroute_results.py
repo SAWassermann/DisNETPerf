@@ -86,7 +86,7 @@ class TracerouteMeasurement:
         endHiddenPathIdx = -1
         endHiddenPathAS = ''
 
-        while idx < ASPath.__len__():
+        while idx < len(ASPath):
             if ASPath[idx] != 'NA_TR' and ASPath[idx] != 'NA_MAP':  # Is this AS-hop unknown?
                 if beginHiddenPathAS != '':
                     endHiddenPathAS = ASPath[idx]
@@ -102,7 +102,7 @@ class TracerouteMeasurement:
                             hiddenPart = hiddenTraceroutePathParts[(beginHiddenPathAS, endHiddenPathAS)]
                     beginHiddenPathAS = ''
                     endHiddenPathAS = ''
-                    if hiddenPart.__len__() > 0:  # Did we find something useful?
+                    if len(hiddenPart) > 0:  # Did we find something useful?
                         ASPath = ASPath[:beginHiddenPathIdx] + hiddenPart + ASPath[endHiddenPathIdx + 1:]
                         idx = beginHiddenPathIdx
                     else:
@@ -119,7 +119,7 @@ class TracerouteMeasurement:
 
         finalASPath = list()
         for path in ASPath:
-            length = finalASPath.__len__()
+            length = len(finalASPath)
             if length == 0 or finalASPath[length - 1] != path:
                 finalASPath.append(path)
         return finalASPath
@@ -157,14 +157,14 @@ class TracerouteMeasurement:
                 res = 'NA_TR'
             else:
                 res = ASMapping[ip[0]]
-            if ASes.__len__() == 0 or res != ASes[ASes.__len__() - 1]:
+            if len(ASes) == 0 or res != ASes[-1]:
                 ASes.append(res)
 
             if ip[0] in IPToPoPMapping:
                 pop = IPToPoPMapping[ip[0]]
             else:
                 pop = 'NA'
-            if PoPs.__len__() == 0 or pop != PoPs[PoPs.__len__() - 1]:
+            if len(PoPs) == 0 or pop != PoPs[-1]:
                 PoPs.append(pop)
 
         pointerToFile.write("ASPATH:\t" + '\t'.join(self.completeASPath(ASes)) + '\n')
@@ -216,20 +216,19 @@ def retrieve_traceroute_results(filename, verbose):
     IPsToAnalyse = set()
 
     for udmLine in udmFile:
-        udmL = udmLine.rstrip('\r\n')
-        data = udmL.split('\t')
-        udms = data[:data.__len__() - 1]
-        dstIP = data[data.__len__() - 1]
+        data = udmLine.rstrip('\r\n').split('\t')
+        udms = data[:-1]
+        dstIP = data[-1]
 
         for udm in udms:
-            resultInfo = subprocess.check_output(['../contrib/udm-result.pl', '--udm', data[0]])
+            resultInfo = subprocess.check_output(['../contrib/udm-result.pl', '--udm', udm])
             if not resultInfo.rstrip('\r\n'):
                 continue
             resultInfo = resultInfo.split('\n')
 
             for line in resultInfo:
                 if line:
-                    if not line.startswith('\t'):     # first line of a result
+                    if not line.startswith('\t'):  # first line of a result
                         l = line.lstrip().split('\t')
                         nbHop = int(l[5])
                         probeID = l[1]
@@ -281,6 +280,7 @@ def retrieve_traceroute_results(filename, verbose):
         measurement.saveToFile(IPToASMapping, currentTime)
     udmFile.close()
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Retrieve and store the results of the launched scheduled traceroutes')
 
@@ -293,7 +293,7 @@ if __name__ == '__main__':
         parser.error('error: You must specify the filename containing measurement-IDs!')
         exit(1)
 
-    if loadIPToPoPMapping('../lib/ip_to_pop_mapping.txt') == None:
+    if loadIPToPoPMapping('../lib/ip_to_pop_mapping.txt') is None:
         exit(2)
 
     retrieve_traceroute_results('../input/' + arguments["filename"], True)
