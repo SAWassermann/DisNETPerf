@@ -16,6 +16,7 @@ import time
 import subprocess
 import os
 import random
+from ripe.atlas.cousteau import Ping, AtlasSource, AtlasCreateRequest
 
 import disnetperf.AUX_IP_to_AS_map as IPToAS
 import disnetperf.AUX_probe_analysing as pa
@@ -352,23 +353,27 @@ def find_psboxes(IPs, verbose, recovery):
         nbOfConsecutiveFailures = 0
         giveUp = False
 
-        for probeSet in probes:
-            probesToUse = ','.join(probeSet)
+        for probesToUse in probes:
             while True:
                 try:
-                    udmCreateInfo = subprocess.check_output(['../contrib/udm-create.pl', '--api', API_KEY, '--type',  'ping', '--target',
-                                                         IP, '--probe-list', probesToUse, '--packets', '10'])
-                    udmCreateInfo = udmCreateInfo.rstrip('\r\n')
+                    description = "Ping target={target}".format(target=IP)
+                    ping = Ping(af=4, target=IP, description=description, protocol="ICMP", packets=10)
+                    source = AtlasSource(type="probes", value=probesToUse)
+                    request = AtlasCreateRequest(key=API_KEY, measurements=[ping], sources=[source], is_oneoff=True)
+
+                    (is_success, response) = request.create()
                     nbOfConsecutiveFailures = 0
 
-                    if udmCreateInfo:
+                    if is_success and 'id' in response:
                         if IP not in IPsToMeasurementIDs:
-                            IPsToMeasurementIDs[IP] = [udmCreateInfo]
+                            IPsToMeasurementIDs[IP] = [response['id']]
                         else:
-                            IPsToMeasurementIDs[IP].append(udmCreateInfo)
-                        measurementIDs.add(udmCreateInfo)
+                            IPsToMeasurementIDs[IP].append(response['id'])
+                        measurementIDs.add(response['id'])
+                    else:
+                        raise IOError()
                     break
-                except subprocess.CalledProcessError:  # maybe too many measurements running?
+                except IOError:  # maybe too many measurements running?
                     nbOfConsecutiveFailures += 1
                     time.sleep(180)
 
