@@ -350,39 +350,27 @@ def find_psboxes(IPs, verbose, recovery):
         elif AS != 'NA_MAP':
             additionalInfoAboutMeasurements[IP] = '[OK]'
 
-        nbOfConsecutiveFailures = 0
         giveUp = False
 
         for probesToUse in probes:
-            while True:
-                try:
-                    description = "Ping target={target}".format(target=IP)
-                    ping = Ping(af=4, target=IP, description=description, protocol="ICMP", packets=10)
-                    source = AtlasSource(type="probes", value=probesToUse)
-                    request = AtlasCreateRequest(key=API_KEY, measurements=[ping], sources=[source], is_oneoff=True)
+            for _ in range(5):  # Perform at most 5 tries before giving up.
+                description = "Ping target={target}".format(target=IP)
+                ping = Ping(af=4, target=IP, description=description, protocol="ICMP", packets=10)
+                source = AtlasSource(type="probes", value=probesToUse)
+                request = AtlasCreateRequest(key=API_KEY, measurements=[ping], sources=[source], is_oneoff=True)
 
-                    (is_success, response) = request.create()
-                    nbOfConsecutiveFailures = 0
+                (is_success, response) = request.create()
 
-                    if is_success and 'id' in response:
-                        if IP not in IPsToMeasurementIDs:
-                            IPsToMeasurementIDs[IP] = [response['id']]
-                        else:
-                            IPsToMeasurementIDs[IP].append(response['id'])
-                        measurementIDs.add(response['id'])
+                if is_success and 'id' in response:
+                    if IP not in IPsToMeasurementIDs:
+                        IPsToMeasurementIDs[IP] = [response['id']]
                     else:
-                        raise IOError()
+                        IPsToMeasurementIDs[IP].append(response['id'])
+                    measurementIDs.add(response['id'])
                     break
-                except IOError:  # maybe too many measurements running?
-                    nbOfConsecutiveFailures += 1
-                    time.sleep(180)
-
-                    # if 5 consecutive measurement-attempts fail, give up
-                    if nbOfConsecutiveFailures == 5:
-                        IPsToMeasurementIDs.pop(IP, None)  # delete this entry; should not be analyzed
-                        giveUp = True
-                        break
-            if giveUp:
+            else:
+                giveUp = True
+                IPsToMeasurementIDs.pop(IP, None)  # delete this entry; should not be analyzed
                 break
         if giveUp:
             break
