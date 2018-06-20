@@ -106,8 +106,8 @@ def find_psboxes(IPs, verbose, recovery):
     Finds the closest box to each IP in <IPs>, displays the results on the screen and stores them in a file in the
     'output' folder and whose naming-scheme is '<timestamp_of_creation_time>_psbox.txt'
     :param IPs:      a list containing all the IPs a closest box should be found to
-    :param verbose:  if true, an error-message gets displayed when an internal problem occurs; otherwise not
-    :param recovery: if true, the recovery-modus will be enabled (for more infos, please see the docs in the folder
+    :param verbose:  if true, an error message gets displayed when an internal problem occurs; otherwise not
+    :param recovery: if true, the recovery mode will be enabled (for more info, please see the docs in the folder
                      'doc')
     :return:         a dictionary whose values are the IPs and the keys are the corresponding closest boxes. If there
                      is no entry for a given IP, no box has been found
@@ -118,7 +118,7 @@ def find_psboxes(IPs, verbose, recovery):
     IPsToMeasurementIDs = dict()
     IPsAlreadyAnalysed = set()
 
-    if recovery:  # recovery-mode enabled
+    if recovery:  # recovery mode enabled
         # recover ID-to-AS mapping that has been done so far - begin
         try:
             ASMap = open('../logs/ID_To_AS.log', 'r')
@@ -162,7 +162,7 @@ def find_psboxes(IPs, verbose, recovery):
 
     if not recovery:
         try:
-            ASMap = open('../logs/ID_To_AS.log', 'w') # clear content of ID-to-AS log
+            ASMap = open('../logs/ID_To_AS.log', 'w')  # clear content of ID-to-AS log
         except IOError:
             if verbose:
                 print("error: Could not open/create file '../logs/ID_To_AS.log'\n")
