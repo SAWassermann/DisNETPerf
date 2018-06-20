@@ -36,7 +36,7 @@ def parseProbeListOutput(output, verbose, map=None):
             elements = line.split('\t')
             probes.append(elements[0]) # append probe ID
             ASMap.write(elements[0] + '\t' + elements[3] + '\n')
-            if map != None: #save AS to dict
+            if map is not None:  # save AS to dict
                 map[elements[0]] = elements[3]
         ASMap.close()
     return [probes[i:i + 500] for i in range(len(probes), 500)]

@@ -467,7 +467,7 @@ if __name__ == '__main__':
     else:
         psBoxMap = find_psboxes(targetIPs, True, False)
 
-    if psBoxMap != None and psBoxMap:
+    if psBoxMap is not None and psBoxMap:
         for IP in targetIPs:
             if IP in psBoxMap:
                 print(IP + '\t' + '\t'.join(psBoxMap[IP]) + '\t' + additionalInfoAboutMeasurements[IP] + '\n')
