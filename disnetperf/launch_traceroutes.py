@@ -18,11 +18,11 @@ from ripe.atlas.cousteau import Traceroute, AtlasSource, AtlasCreateRequest
 import disnetperf.find_psbox as ps
 
 
-#global vars - begin
+# global vars - begin
 # should define the KEY to run RIPE Atlas (Key to create a new user defined measurement)
 API_KEY = 'XXXXXXXXXXXXXXXXXXXXXXXX'
 INTERVAL_DEFAULT = 600
-#global vars - end
+# global vars - end
 
 
 def launch_scheduled_traceroutes(destIP, probes, start, stop, interval, numberOfTraceroutes):
@@ -41,7 +41,6 @@ def launch_scheduled_traceroutes(destIP, probes, start, stop, interval, numberOf
     :param interval:            time between 2 consecutive traceroutes (in seconds)
     :param numberOfTraceroutes: number of traceroutes to be scheduled
     """
-    probes = [probes[i:i + 500] for i in range(len(probes), 500)]
     currentTime = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-%H-%M-%S')
     try:
         logFile = open('../logs/' + currentTime + '_current_scheduled_traceroutes.log', 'w', 0)
@@ -49,66 +48,56 @@ def launch_scheduled_traceroutes(destIP, probes, start, stop, interval, numberOf
         print("error: Could not open/create '../logs/" + currentTime + "_current_scheduled_traceroutes.log'!\n")
         return
 
-    nbOfConsecutiveFailures = 0
     giveUp = False
     measurementIDs = list()
 
+    probes = [probes[i:i + 500] for i in range(len(probes), 500)]
     for probesToUse in probes:
-        while True:
-            try:
-                if stop:
-                    start = start if start else int(math.ceil(time.time())) + 1
-                    i = interval if interval else INTERVAL_DEFAULT
+        for _ in range(5):  # Perform at most 5 tries before giving up.
+            if stop:
+                startTime = start if start else int(math.ceil(time.time())) + 1
+                i = interval if interval else INTERVAL_DEFAULT
 
-                    description = "Traceroute target={target} [{start}:{stop}]".format(target=destIP, start=start, stop=stop)
-                    traceroute = Traceroute(af=4, target=destIP, description=description, protocol="ICMP")
-                    source = AtlasSource(type="probes", value=probesToUse)
-                    request = AtlasCreateRequest(start_time=start, stop_time=stop, key=API_KEY, measurements=[traceroute], sources=[source], is_oneoff=False, interval=i)
+                description = "Traceroute target={target} [{start}:{stop}]".format(target=destIP, start=startTime, stop=stop)
+                traceroute = Traceroute(af=4, target=destIP, description=description, protocol="ICMP")
+                source = AtlasSource(type="probes", value=probesToUse)
+                request = AtlasCreateRequest(start_time=startTime, stop_time=stop, key=API_KEY, measurements=[traceroute], sources=[source], is_oneoff=False, interval=i)
 
-                elif not start and not interval and not numberOfTraceroutes:
-                    description = "Traceroute target={target}".format(target=destIP)
-                    traceroute = Traceroute(af=4, target=destIP, description=description, protocol="ICMP")
-                    source = AtlasSource(type="probes", value=probesToUse)
-                    request = AtlasCreateRequest(key=API_KEY, measurements=[traceroute], sources=[source], is_oneoff=True)
+            elif not start and not interval and not numberOfTraceroutes:
+                description = "Traceroute target={target}".format(target=destIP)
+                traceroute = Traceroute(af=4, target=destIP, description=description, protocol="ICMP")
+                source = AtlasSource(type="probes", value=probesToUse)
+                request = AtlasCreateRequest(key=API_KEY, measurements=[traceroute], sources=[source], is_oneoff=True)
 
-                elif numberOfTraceroutes and interval and not start:
-                    start = int(math.ceil(time.time())) + 1
-                    stop = start + numberOfTraceroutes * interval
+            elif numberOfTraceroutes and interval and not start:
+                startTime = int(math.ceil(time.time())) + 1
+                stopTime = startTime + numberOfTraceroutes * interval
 
-                    description = "Traceroute target={target} [{start}:{stop}]".format(target=destIP, start=start, stop=stop)
-                    traceroute = Traceroute(af=4, target=destIP, description=description, protocol="ICMP")
-                    source = AtlasSource(type="probes", value=probesToUse)
-                    request = AtlasCreateRequest(start_time=start, stop_time=stop, key=API_KEY, measurements=[traceroute], sources=[source], is_oneoff=False, interval=interval)
+                description = "Traceroute target={target} [{start}:{stop}]".format(target=destIP, start=startTime, stop=stopTime)
+                traceroute = Traceroute(af=4, target=destIP, description=description, protocol="ICMP")
+                source = AtlasSource(type="probes", value=probesToUse)
+                request = AtlasCreateRequest(start_time=startTime, stop_time=stopTime, key=API_KEY, measurements=[traceroute], sources=[source], is_oneoff=False, interval=interval)
 
-                elif numberOfTraceroutes and not interval:
-                    start = start if start else int(math.ceil(time.time())) + 1
-                    stop = start + numberOfTraceroutes * INTERVAL_DEFAULT
+            elif numberOfTraceroutes and not interval:
+                startTime = start if start else int(math.ceil(time.time())) + 1
+                stopTime = startTime + numberOfTraceroutes * INTERVAL_DEFAULT
 
-                    description = "Traceroute target={target} [{start}:{stop}]".format(target=destIP, start=start, stop=stop)
-                    traceroute = Traceroute(af=4, target=destIP, description=description, protocol="ICMP")
-                    source = AtlasSource(type="probes", value=probesToUse)
-                    request = AtlasCreateRequest(start_time=start, stop_time=stop, key=API_KEY, measurements=[traceroute], sources=[source], is_oneoff=False, interval=INTERVAL_DEFAULT)
+                description = "Traceroute target={target} [{start}:{stop}]".format(target=destIP, start=startTime, stop=stopTime)
+                traceroute = Traceroute(af=4, target=destIP, description=description, protocol="ICMP")
+                source = AtlasSource(type="probes", value=probesToUse)
+                request = AtlasCreateRequest(start_time=startTime, stop_time=stopTime, key=API_KEY, measurements=[traceroute], sources=[source], is_oneoff=False, interval=INTERVAL_DEFAULT)
 
-                else:
-                    break
-
-                (is_success, response) = request.create()
-                if not is_success:
-                    raise IOError()
-                nbOfConsecutiveFailures = 0
-
-                if 'id' in response:
-                    measurementIDs.append(response['id'])
+            else:
                 break
 
-            except IOError:
-                nbOfConsecutiveFailures += 1
-
-                if nbOfConsecutiveFailures == 5:
-                    giveUp = True
-                    break
-        if giveUp:
+            (is_success, response) = request.create()
+            if is_success and 'id' in response:
+                measurementIDs.append(response['id'])
+                break
+        else:
+            giveUp = True
             break
+
     if not giveUp:
         logFile.write('\t'.join(measurementIDs) + '\t' + destIP + '\n')
     logFile.close()
