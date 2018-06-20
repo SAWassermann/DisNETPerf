@@ -14,7 +14,7 @@ import datetime
 import time
 import math
 
-import find_psbox as ps
+import disnetperf.find_psbox as ps
 
 
 #global vars - begin
@@ -171,7 +171,7 @@ if __name__ == '__main__':
             else:
                 exit(0)
         closestBox = [closestBox]
-    else:   # check file
+    else:  # check file
         try:
             IPfile = open('../input/' + arguments['filename'], 'r')
         except IOError:

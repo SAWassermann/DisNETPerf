@@ -15,8 +15,8 @@ import subprocess
 import datetime
 import time
 
-import AUX_IP_to_AS_map as parseIP
-import AUX_get_RouteViews_data as rv
+import disnetperf.AUX_IP_to_AS_map as parseIP
+import disnetperf.AUX_get_RouteViews_data as rv
 
 
 # global vars - begin

@@ -17,9 +17,9 @@ import subprocess
 import os
 import random
 
-import AUX_IP_to_AS_map as IPToAS
-import AUX_probe_analysing as pa
-import AUX_check_measurements as cm
+import disnetperf.AUX_IP_to_AS_map as IPToAS
+import disnetperf.AUX_probe_analysing as pa
+import disnetperf.AUX_check_measurements as cm
 
 
 # constants - begin
