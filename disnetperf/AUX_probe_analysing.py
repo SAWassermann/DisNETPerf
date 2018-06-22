@@ -51,7 +51,7 @@ def findASNeighbourhood(ASN, verbose):
     """
     try:
         file = open('../lib/ASNeighbours.txt', 'r')
-    except:
+    except IOError:
         if verbose:
             print("error: Could not open file '../lib/ASNeighbours.txt'\n")
         return None
