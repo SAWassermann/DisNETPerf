@@ -19,15 +19,14 @@ def getASPath(start, end):
     :return:        a list containing all the AS-hops between <start> and <end> (including <start> and <end>) if a path
                     was found; en empty list otherwise
     """
-    if os.path.exists('../lib/routeviews_paths/' + start + '.txt'):
-        file = open('../lib/routeviews_paths/' + start + '.txt', 'r')
-    else:
+    if not os.path.exists('../lib/routeviews_paths/' + start + '.txt'):
         return list()
 
-    for line in file:
-        pathList = line.rstrip('\r\n').split()
-        if pathList[-1] == end:
-            file.close()
-            return pathList
-    file.close()
+    with open('../lib/routeviews_paths/' + start + '.txt', 'r') as file:
+        for line in file:
+            pathList = line.rstrip('\r\n').split()
+            if pathList[-1] == end:
+                file.close()
+                return pathList
+
     return list()

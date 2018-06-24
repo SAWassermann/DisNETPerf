@@ -40,6 +40,7 @@ def mapIPtoAS(IPListArg, IPtoASFilename, verbose):
         if verbose:
             print("error: Could not open '" + IPtoASFilename + "'\n")
         return None
+
     IPList = list(IPListArg)
     IPList.sort(key=IPToInt)
 
@@ -62,5 +63,4 @@ def mapIPtoAS(IPListArg, IPtoASFilename, verbose):
             else:
                 currentIndex += 1
 
-    csvfile.close()
     return IPtoASMap

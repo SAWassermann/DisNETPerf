@@ -40,7 +40,7 @@ def checkMeasurements(measurementIDs, verbose):
                     return None
 
         runningFlags = ["'name' => 'Scheduled'", "'name' => 'Ongoing'", "'name' => 'Specified'"]
-        if not any(flag in statusInfo for flag in runningFlags): # UDM finished
+        if not any(flag in statusInfo for flag in runningFlags):  # UDM finished
             stopped += 1
 
     return not (total - stopped > 0)

@@ -20,25 +20,24 @@ def parseProbeListOutput(output, verbose, map=None):
     """
     if not output:
         return ''
-    else:
-        resultLines = output.rsplit('\n')
-        probes = list()
-        try:
-            ASMap = open('../logs/ID_To_AS.log', 'a', 0)
-        except IOError:
-            if verbose:
-                print("error: Could not open file '../logs/ID_To_AS.log'\n")
-            return None
 
-        for line in resultLines:
-            if not line:
-                continue
-            elements = line.split('\t')
-            probes.append(elements[0]) # append probe ID
-            ASMap.write(elements[0] + '\t' + elements[3] + '\n')
-            if map is not None:  # save AS to dict
-                map[elements[0]] = elements[3]
-        ASMap.close()
+    try:
+        with open('../logs/ID_To_AS.log', 'a', 0) as ASMap:
+            probes = list()
+
+            for line in output.rsplit('\n'):
+                if not line:
+                    continue
+                elements = line.split('\t')
+                probes.append(elements[0])  # append probe ID
+                ASMap.write(elements[0] + '\t' + elements[3] + '\n')
+                if map is not None:  # save AS to dict
+                    map[elements[0]] = elements[3]
+    except IOError:
+        if verbose:
+            print("error: Could not open file '../logs/ID_To_AS.log'\n")
+        return None
+
     return [probes[i:i + 500] for i in range(len(probes), 500)]
 
 
@@ -50,23 +49,22 @@ def findASNeighbourhood(ASN, verbose):
     :return:        a list of the detected neighbours
     """
     try:
-        file = open('../lib/ASNeighbours.txt', 'r')
+        with open('../lib/ASNeighbours.txt', 'r') as file:
+            neighbours = set()
+            for line in file:
+                line = line.rstrip('\r\n')
+                if not line or line.isspace() or line.startswith('#'):
+                    continue
+
+                line = line.split('|')
+                if ASN in line:
+                    if line[0] == ASN:
+                        neighbours.add(line[1])
+                    else:
+                        neighbours.add(line[0])
+            return list(neighbours)
     except IOError:
         if verbose:
             print("error: Could not open file '../lib/ASNeighbours.txt'\n")
         return None
 
-    neighbours = set()
-    for line in file:
-        l = line.rstrip('\r\n')
-        if not l or l.isspace() or l.startswith('#'):
-            continue
-        else:
-            l = l.split('|')
-            if ASN in l:
-                if l[0] == ASN:
-                    neighbours.add(l[1])
-                else:
-                    neighbours.add(l[0])
-    file.close()
-    return list(neighbours)
