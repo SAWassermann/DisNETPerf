@@ -9,7 +9,6 @@ PO Box 1866, Mountain View, CA 94042, USA.
 """
 
 import argparse
-import subprocess
 import datetime
 import time
 import math
@@ -34,7 +33,7 @@ def launch_scheduled_traceroutes(destIP, probes, start, stop, interval, numberOf
     When no interval is given, a default interval of 600 seconds is used
     Either a stop-time or a number of traceroutes to be scheduled has to be given. When a stop-time
     is indicated, the number of traceroutes will be ignored
-    :param destIP:              the IP towards which tracroutes should be launched
+    :param destIP:              the IP towards which traceroutes should be launched
     :param probes:              the list of RIPE Atlas probes which should be used as sources
     :param start:               time (UNIX timestamp) at which first traceroute should be launched
     :param stop:                time (UNIX timestamp) at which no more traceroutes should be launched
@@ -170,32 +169,27 @@ if __name__ == '__main__':
         closestBox = [closestBox]
     else:  # check file
         try:
-            IPfile = open('../input/' + arguments['filename'], 'r')
+            # load IPs from file
+            with open('../input/' + arguments['filename'], 'r') as IPfile:
+                closestBox = set()
+                targetIPs = list()
+                for line in IPfile:
+                    line = line.rstrip('\r\n')
+                    if line and not line.isspace():
+                        data = line.split('\t')
+                        if flag == 1 and len(data) < 2:
+                            print('error: You must specify a RIPE Atlas box to use when -f is set to 1, please refer '
+                                  'to the manual\n')
+                            exit(3)
+                        if ps.checkIP(data[0]) is None:
+                            print('error: The indicated IPs must be in the format <X.X.X.X> where X is an integer >= 0!\n')
+                            exit(4)
+                        targetIPs.append(data[0])
+                        if flag == 1:
+                            closestBox.add(data[1])
         except IOError:
             print("error: Could not open file '../input/" + arguments['filename'] + "'\n")
             exit(2)
-
-        closestBox = set()
-
-        # load IPs from file
-        targetIPs = list()
-        for line in IPfile:
-            l = line.rstrip('\r\n')
-            if l and not l.isspace():
-                data = l.split('\t')
-                if flag == 1 and len(data) < 2:
-                    print('error: You must specify a RIPE Atlas box to use when -f is set to 1, please refer to '
-                          'the manual\n')
-                    IPfile.close()
-                    exit(3)
-                if ps.checkIP(data[0]) is None:
-                    print('error: The indicated IPs must be in the format <X.X.X.X> where X is an integer >= 0!\n')
-                    IPfile.close()
-                    exit(4)
-                targetIPs.append(data[0])
-                if flag == 1:
-                    closestBox.add(data[1])
-        IPfile.close()
 
         if flag == 0:
             closestBoxMap = ps.find_psboxes(targetIPs, True, False)

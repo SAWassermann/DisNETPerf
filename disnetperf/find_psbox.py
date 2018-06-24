@@ -102,7 +102,7 @@ def getSmallestPingProbe(measurementIDsDict, outputFileName):
     return IPToPSBoxMap
 
 
-def find_psboxes(IPs, verbose, recovery):
+def find_psboxes(IPs, verbose, recovery=True):
     """
     Finds the closest box to each IP in <IPs>, displays the results on the screen and stores them in a file in the
     'output' folder and whose naming-scheme is '<timestamp_of_creation_time>_psbox.txt'
