@@ -13,7 +13,6 @@ from __future__ import print_function
 import argparse
 import datetime
 import time
-import subprocess
 import os
 import random
 from ripe.atlas.cousteau import Ping, AtlasSource, AtlasCreateRequest, AtlasResultsRequest, ProbeRequest
