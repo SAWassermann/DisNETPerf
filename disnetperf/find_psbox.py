@@ -298,16 +298,15 @@ def find_psboxes(IPs, verbose, recovery=True):
                 probeToASMap[probeList[i][0]] = probeList[i][1]
 
             try:
-                ASMap = open('../logs/ID_To_AS.log', 'a', 0)
+                with open('../logs/ID_To_AS.log', 'a', 0) as ASMap:
+                    for i in idx:
+                        ASMap.write(probeList[i][0] + '\t' + probeList[i][1] + '\n')
             except IOError:
                 if verbose:
                     print("error: Could not open/create file '../logs/ID_To_AS.log'\n")
                 output.close()
                 logFile.close()
                 return None
-            for i in idx:
-                ASMap.write(probeList[i][0] + '\t' + probeList[i][1] + '\n')
-            ASMap.close()
 
             probes = [selectedProbes[i:i + 500] for i in range(len(selectedProbes), 500)]
         elif AS != 'NA_MAP':
@@ -372,6 +371,7 @@ def find_psboxes(IPs, verbose, recovery=True):
     #     os.remove('../logs/ID_To_AS.log')
 
     return results
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Find the closest RIPE Atlas box to a set of IPs')
