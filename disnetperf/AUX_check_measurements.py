@@ -8,7 +8,7 @@ PO Box 1866, Mountain View, CA 94042, USA.
 
 from __future__ import print_function
 
-import subprocess
+from ripe.atlas.cousteau import AtlasResultsRequest
 
 
 def checkMeasurements(measurementIDs, verbose):
@@ -26,11 +26,11 @@ def checkMeasurements(measurementIDs, verbose):
     for udm in measurementIDs:
         total += 1
         while True:
-            try:
-                statusInfo = subprocess.check_output(['../contrib/udm-status.pl', '--udm', udm])
+            is_success, statusInfo = AtlasResultsRequest(msm_id=udm).create()
+            if is_success:
                 nbOfConsecutiveFailures = 0
                 break
-            except subprocess.CalledProcessError:
+            else:
                 nbOfConsecutiveFailures += 1
 
                 # if 5 consecutive checks failed, abort

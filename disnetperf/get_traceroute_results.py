@@ -23,7 +23,8 @@ from ripe.atlas.cousteau import AtlasResultsRequest
 # global vars - begin
 
 # keys: (start, end) tuple where start is the beginning of a path and end the end of the path
-# values: the inferred AS-path (in form of a list) between start and end via RouteViews data; empty list of no info available
+# values: the inferred AS-path (in form of a list) between start and end via RouteViews data;
+# empty list of no info available
 hiddenTraceroutePathParts = dict()
 
 IPToPoPMapping = dict()
