@@ -128,9 +128,9 @@ def find_psboxes(IPs, verbose, recovery=True):
             return None
 
         for line in ASMap:
-            l = line.rstrip('\r\n')
-            if l:
-                data = l.split('\t')
+            line = line.rstrip('\r\n')
+            if line:
+                data = line.split('\t')
                 probeToASMap[data[0]] = data[1]
         ASMap.close()
         # recover ID-to-AS mapping that has been done so far - end
@@ -146,12 +146,12 @@ def find_psboxes(IPs, verbose, recovery=True):
         cnt = 0
         timeStamp = ''
         for line in logFile:
-            l = line.rstrip('\r\n')
-            if l:
+            line = line.rstrip('\r\n')
+            if line:
                 if cnt == 0:
-                    timeStamp = l
+                    timeStamp = line
                 else:
-                    data = l.split('\t')
+                    data = line.split('\t')
                     IPsToMeasurementIDs[data[-2]] = data[:-2]
                     measurementIDs.update(data[:-2])
                     additionalInfoAboutMeasurements[data[-2]] = data[-1]
@@ -199,21 +199,19 @@ def find_psboxes(IPs, verbose, recovery=True):
 
     # open file containing RIPE Atlas boxes and load data - begin
     try:
-        plFile = open('../lib/probelist.txt', 'r')
+        with open('../lib/probelist.txt', 'r') as plFile:
+            probeList = list()  # load list with all currently connected RIPE probes
+            for line in plFile:
+                line = line.rstrip('\r\n')
+                if line:
+                    probeData = line.split('\t')
+                    probeList.append((probeData[0], probeData[3]))
     except IOError:
         if verbose:
             print("error: Could not open file '../lib/probelist.txt'\n")
         output.close()
         logFile.close()
         return None
-
-    probeList = list()  # load list with all currently connected RIPE probes
-    for line in plFile:
-        l = line.rstrip('\r\n')
-        if l:
-            probeData = l.split('\t')
-            probeList.append((probeData[0], probeData[3]))
-    plFile.close()
     # open file containing RIPE Atlas boxes and load data - end
 
     targetIPs = list(IPs)
@@ -246,16 +244,15 @@ def find_psboxes(IPs, verbose, recovery=True):
                 probeToASMap[probeList[i][0]] = probeList[i][1]
 
             try:
-                ASMap = open('../logs/ID_To_AS.log', 'a', 0)
+                with open('../logs/ID_To_AS.log', 'a', 0) as ASMap:
+                    for i in idx:
+                        ASMap.write(probeList[i][0] + '\t' + probeList[i][1] + '\n')
             except IOError:
                 if verbose:
                     print("error: Could not open/create file '../logs/ID_To_AS.log'\n")
                 output.close()
                 logFile.close()
                 return None
-            for i in idx:
-                ASMap.write(probeList[i][0] + '\t' + probeList[i][1] + '\n')
-            ASMap.close()
 
             probes = [selectedProbes[i:i + 500] for i in range(len(selectedProbes), 500)]
 
