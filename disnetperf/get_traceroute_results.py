@@ -11,12 +11,13 @@ PO Box 1866, Mountain View, CA 94042, USA.
 from __future__ import print_function
 
 import argparse
-import subprocess
 import datetime
 import time
 
 import disnetperf.AUX_IP_to_AS_map as parseIP
 import disnetperf.AUX_get_RouteViews_data as rv
+
+from ripe.atlas.cousteau import AtlasResultsRequest
 
 
 # global vars - begin
@@ -224,7 +225,11 @@ def retrieve_traceroute_results(filename, verbose):
         dstIP = data[-1]
 
         for udm in udms:
-            resultInfo = subprocess.check_output(['../contrib/udm-result.pl', '--udm', udm])
+            is_success, resultInfo = AtlasResultsRequest(msm_id=udm).create()
+            if not is_success:
+                print("Can't get udm-results...\n")
+                break
+
             if not resultInfo.rstrip('\r\n'):
                 continue
             resultInfo = resultInfo.split('\n')

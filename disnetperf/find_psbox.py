@@ -16,7 +16,7 @@ import time
 import subprocess
 import os
 import random
-from ripe.atlas.cousteau import Ping, AtlasSource, AtlasCreateRequest
+from ripe.atlas.cousteau import Ping, AtlasSource, AtlasCreateRequest, AtlasResultsRequest
 
 import disnetperf.AUX_IP_to_AS_map as IPToAS
 import disnetperf.AUX_probe_analysing as pa
@@ -49,9 +49,9 @@ def checkIP(ip):
 
 def getSmallestPingProbe(measurementIDsDict, outputFileName):
     """
-    Retrieves closest RIPE atlas boxes to target-IPs and stores results
+    Retrieves closest RIPE atlas boxes to target Ps and stores results
     :param measurementIDsDict:  a dictionary whose keys are RIPE user-defined measurement (udm) IDs and the corresponding
-                                values are the targets of the udms
+                                values are the targets of the UDMs
     :param outputFileName:      name of the file which the results of the analysis should be written to.
                                 A line of the file has the format:
                                 "<target-IP> <RIPE probe ID> <RIPE probe IP> <RIPE probe AS> <min RTT> <Label> "
@@ -66,9 +66,8 @@ def getSmallestPingProbe(measurementIDsDict, outputFileName):
         pingMeasurements = list()
 
         for udm in UDMs:
-            try:
-                resultInfo = subprocess.check_output(['../contrib/udm-result.pl', '--udm', udm])
-            except subprocess.CalledProcessError:
+            is_success, resultInfo = AtlasResultsRequest(msm_id=udm).create()
+            if not is_success:
                 print("Can't get udm-results...\n")
                 break
 
@@ -77,9 +76,9 @@ def getSmallestPingProbe(measurementIDsDict, outputFileName):
 
             resultInfo = resultInfo.split('\n')
             for line in resultInfo:
-                l = line.rstrip('\r\n')
-                if l:
-                    data = l.split('\t')
+                line = line.rstrip('\r\n')
+                if line:
+                    data = line.split('\t')
                     srcIP = data[2]
                     destIP = data[4]
 
@@ -87,9 +86,9 @@ def getSmallestPingProbe(measurementIDsDict, outputFileName):
                         continue
 
                     if data[5] != '*':
-                        pingMeasurements.append((data[1], data[2], float(data[5]))) #ID/IP/RTT
+                        pingMeasurements.append((data[1], data[2], float(data[5])))  # ID/IP/RTT
 
-        if not pingMeasurements: # target unreachable
+        if not pingMeasurements:  # target unreachable
             continue
         probeMinRTT = min(pingMeasurements, key=lambda tup: tup[2])
 
@@ -208,7 +207,7 @@ def find_psboxes(IPs, verbose, recovery=True):
         logFile.close()
         return None
 
-    probeList = list() # load list with all currently connected RIPE probes
+    probeList = list()  # load list with all currently connected RIPE probes
     for line in plFile:
         l = line.rstrip('\r\n')
         if l:
@@ -260,7 +259,7 @@ def find_psboxes(IPs, verbose, recovery=True):
 
             probes = [selectedProbes[i:i + 500] for i in range(len(selectedProbes), 500)]
 
-        elif not AS in encounteredASes: # check whether we have already retrieved probes for this AS
+        elif not AS in encounteredASes:  # check whether we have already retrieved probes for this AS
             # check whether there are probes in IP's AS
             nbOfConsecutiveFailures = 0
             giveUp = False
@@ -278,7 +277,7 @@ def find_psboxes(IPs, verbose, recovery=True):
                         giveUp = True
                         break
             if giveUp:
-                break # proceed to closest-box analysis
+                break  # proceed to closest-box analysis
 
             # if not, look at the neighbour-ASes
             if not probeListInfo:
