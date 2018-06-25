@@ -11,10 +11,9 @@ from __future__ import print_function
 
 def parseProbeListOutput(output, verbose, map=None):
     """
-    Parses the output of the script 'probe-list.pl', i.e. the script which retrieves a list of RIPE Atlas probes, and
-    returns a list of the found probe IDs
-    :param output:  the output of probe-list.pl
-    :param verbose: if true, an error-message gets displayed when an internal problem occurs, otherwise not
+    Parses a list of RIPE Altas probe descriptions and returns a list of the found probe IDs
+    :param output:  the list of probe descriptions
+    :param verbose: if true, an error message gets displayed when an internal problem occurs, otherwise not
     :param map:     if != none, the key-value pairs (probeID, AS) will be saved to the dictionary <map>
     :return:        a list of sublists in which each sublist contains at most 500 probe IDs
     """
@@ -25,7 +24,7 @@ def parseProbeListOutput(output, verbose, map=None):
         with open('../logs/ID_To_AS.log', 'a', 0) as ASMap:
             probes = list()
 
-            for line in output.rsplit('\n'):
+            for line in output:
                 if not line:
                     continue
                 elements = line.split('\t')

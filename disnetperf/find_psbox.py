@@ -16,7 +16,7 @@ import time
 import subprocess
 import os
 import random
-from ripe.atlas.cousteau import Ping, AtlasSource, AtlasCreateRequest, AtlasResultsRequest
+from ripe.atlas.cousteau import Ping, AtlasSource, AtlasCreateRequest, AtlasResultsRequest, ProbeRequest
 
 import disnetperf.AUX_IP_to_AS_map as IPToAS
 import disnetperf.AUX_probe_analysing as pa
@@ -256,58 +256,25 @@ def find_psboxes(IPs, verbose, recovery=True):
 
             probes = [selectedProbes[i:i + 500] for i in range(len(selectedProbes), 500)]
 
-        elif not AS in encounteredASes:  # check whether we have already retrieved probes for this AS
+        elif AS not in encounteredASes:  # check whether we have already retrieved probes for this AS
             # check whether there are probes in IP's AS
-            nbOfConsecutiveFailures = 0
-            giveUp = False
-            while True:
-                try:
-                    probeListInfo = subprocess.check_output(['../contrib/probe-list.pl', '--asn', IPToASMap[IP]])
-                    nbOfConsecutiveFailures = 0
-                    break
-                except subprocess.CalledProcessError:
-                    nbOfConsecutiveFailures += 1
-                    time.sleep(120)
+            probes = list(ProbeRequest(asn=IPToASMap[IP]))
+            # TODO: what if problem in executing request?
 
-                    # if download-attempt fails for 5 consecutive times, abord
-                    if nbOfConsecutiveFailures == 5:
-                        giveUp = True
-                        break
-            if giveUp:
-                break  # proceed to closest-box analysis
-
-            # if not, look at the neighbour-ASes
-            if not probeListInfo:
+            # if not, look at the neighbour ASes
+            if not probes:
                 neighbours = pa.findASNeighbourhood(IPToASMap[IP], True)
                 if neighbours is None:
                     output.close()
                     logFile.close()
                     return None
 
-                giveUp = False
-                nbOfConsecutiveFailures = 0
                 for neighbour in neighbours:
-                    while True:
-                        try:
-                            probeListInfo += subprocess.check_output(['../contrib/probe-list.pl', '--asn', neighbour])
-                            nbOfConsecutiveFailures = 0
-                            break
-                        except subprocess.CalledProcessError:
-                            nbOfConsecutiveFailures += 1
-                            time.sleep(120)
+                    probes = list(ProbeRequest(asn=neighbour))
+            # TODO: what if problem in executing request?
 
-                            # if download-attempt fails for 5 consecutive times, abord
-                            if nbOfConsecutiveFailures == 5:
-                                giveUp = True
-                                break
-                    if giveUp:
-                        break
-
-                if giveUp:
-                    continue
-
-            if probeListInfo: # we have found neighbour-probes
-                probes = pa.parseProbeListOutput(probeListInfo, True, probeToASMap)
+            if probes:  # we have found neighbouring probes
+                probes = pa.parseProbeListOutput(probes, True, probeToASMap)
                 if probes is None:
                     output.close()
                     logFile.close()
