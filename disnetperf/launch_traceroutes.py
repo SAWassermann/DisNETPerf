@@ -93,6 +93,8 @@ def launch_scheduled_traceroutes(destIP, probes, start, stop, interval, numberOf
             if is_success and 'id' in response:
                 measurementIDs.append(response['id'])
                 break
+            else:
+                time.sleep(180)
         else:
             giveUp = True
             break

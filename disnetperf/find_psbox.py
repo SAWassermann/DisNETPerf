@@ -329,6 +329,8 @@ def find_psboxes(IPs, verbose, recovery=True):
                         IPsToMeasurementIDs[IP].append(response['id'])
                     measurementIDs.add(response['id'])
                     break
+                else:
+                    time.sleep(180)
             else:
                 giveUp = True
                 IPsToMeasurementIDs.pop(IP, None)  # delete this entry; should not be analyzed
