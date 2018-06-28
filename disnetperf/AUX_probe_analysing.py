@@ -21,7 +21,7 @@ def parseProbeListOutput(output, verbose, map=None):
         return ''
 
     try:
-        with open('../logs/ID_To_AS.log', 'a', 0) as ASMap:
+        with open('../logs/ID_To_AS.log', 'a', 1) as ASMap:
             probes = list()
 
             for el in output:
@@ -34,7 +34,7 @@ def parseProbeListOutput(output, verbose, map=None):
             print("error: Could not open file '../logs/ID_To_AS.log'\n")
         return None
 
-    return [probes[i:i + 500] for i in range(len(probes), 500)]
+    return [probes[i:i + 500] for i in range(0, len(probes), 500)]
 
 
 def findASNeighbourhood(ASN, verbose):

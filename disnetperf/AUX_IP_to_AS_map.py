@@ -33,7 +33,7 @@ def mapIPtoAS(IPListArg, IPtoASFilename, verbose):
     IPtoASMap = dict()
 
     try:
-        with open(IPtoASFilename, 'rb') as csvfile:
+        with open(IPtoASFilename, 'r') as csvfile:
             reader = csv.reader(csvfile)
             IPRangeData = list(reader)
     except IOError:

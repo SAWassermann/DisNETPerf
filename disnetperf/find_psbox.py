@@ -65,35 +65,37 @@ def getSmallestPingProbe(measurementIDsDict, outputFileName):
         pingMeasurements = list()
 
         for udm in UDMs:
-            is_success, resultInfo = AtlasResultsRequest(msm_id=udm).create()
-            if not is_success:
+            for _ in range(5):
+                is_success, resultInfo = AtlasResultsRequest(msm_id=udm).create()
+
+                if is_success and resultInfo:
+                    break
+                else:
+                    time.sleep(30)
+            else:
                 print("Can't get udm-results...\n")
-                break
+                continue
 
             if not resultInfo:
                 continue
 
-            resultInfo = resultInfo.split('\n')
             for line in resultInfo:
-                line = line.rstrip('\r\n')
-                if line:
-                    data = line.split('\t')
-                    srcIP = data[2]
-                    destIP = data[4]
+                srcIP = line['src_addr']
+                destIP = line['dst_addr']
 
-                    if srcIP == destIP:
-                        continue
+                if srcIP == destIP:
+                    continue
 
-                    if data[5] != '*':
-                        pingMeasurements.append((data[1], data[2], float(data[5])))  # ID/IP/RTT
+                if line['min'] != '*':
+                    pingMeasurements.append((line['prb_id'], line['from'], line['min']))  # probe's ID/IP/RTT
 
         if not pingMeasurements:  # target unreachable
             continue
         probeMinRTT = min(pingMeasurements, key=lambda tup: tup[2])
 
-        outputFileName.write(IP + '\t' + probeMinRTT[0] + '\t' + probeMinRTT[1] + '\t'
-                             + probeToASMap[probeMinRTT[0]] + '\t' + str(probeMinRTT[2]) + '\t'
-                             + additionalInfoAboutMeasurements[IP] + '\n')
+        outputFileName.write(IP + '\t' + str(probeMinRTT[0]) + '\t' + str(probeMinRTT[1]) + '\t'
+                             + str(probeToASMap[probeMinRTT[0]]) + '\t' + str(probeMinRTT[2]) + '\t'
+                             + str(additionalInfoAboutMeasurements[IP]) + '\n')
 
         IPToPSBoxMap[IP] = (probeMinRTT[0], probeMinRTT[1], probeToASMap[probeMinRTT[0]], str(probeMinRTT[2]))
 
@@ -317,17 +319,17 @@ def find_psboxes(IPs, verbose, recovery=False):
             for _ in range(5):  # Perform at most 5 tries before giving up.
                 description = "Ping target={target}".format(target=IP)
                 ping = Ping(af=4, target=IP, description=description, protocol="ICMP", packets=10)
-                source = AtlasSource(type="probes", value=probesToUse)
+                source = AtlasSource(type="probes", value=','.join(map(str, probesToUse)), requested=len(probesToUse))
                 request = AtlasCreateRequest(key=API_KEY, measurements=[ping], sources=[source], is_oneoff=True)
 
                 (is_success, response) = request.create()
 
-                if is_success and 'id' in response:
+                if is_success and 'measurements' in response:
                     if IP not in IPsToMeasurementIDs:
-                        IPsToMeasurementIDs[IP] = [response['id']]
+                        IPsToMeasurementIDs[IP] = [response['measurements'][0]]
                     else:
-                        IPsToMeasurementIDs[IP].append(response['id'])
-                    measurementIDs.add(response['id'])
+                        IPsToMeasurementIDs[IP].append(response['measurements'][0])
+                    measurementIDs.add(response['measurements'][0])
                     break
                 else:
                     time.sleep(180)
@@ -339,7 +341,7 @@ def find_psboxes(IPs, verbose, recovery=False):
             break
 
         if IPsToMeasurementIDs[IP]:
-            logFile.write('\t'.join(IPsToMeasurementIDs[IP]) + '\t' + IP + '\t'
+            logFile.write('\t'.join(map(str, IPsToMeasurementIDs[IP])) + '\t' + IP + '\t'
                                     + additionalInfoAboutMeasurements[IP] + '\n')
         # pinging neighbours - end
 
@@ -348,7 +350,7 @@ def find_psboxes(IPs, verbose, recovery=False):
 
     # waiting for ping-measurements to finish
     if verbose:
-        print('Waiting for ping-measurements to finish...\n')
+        print('Waiting for ping measurements to finish...\n')
     status = cm.checkMeasurements(measurementIDs, True)
     if status is None:
         return None
@@ -434,7 +436,7 @@ if __name__ == '__main__':
     if psBoxMap is not None and psBoxMap:
         for IP in targetIPs:
             if IP in psBoxMap:
-                print(IP + '\t' + '\t'.join(psBoxMap[IP]) + '\t' + additionalInfoAboutMeasurements[IP] + '\n')
+                print(IP + '\t' + '\t'.join(map(str, psBoxMap[IP])) + '\t' + str(additionalInfoAboutMeasurements[IP]) + '\n')
     if psBoxMap is None:
         exit(4)
     else:
