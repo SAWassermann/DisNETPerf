@@ -24,14 +24,11 @@ def parseProbeListOutput(output, verbose, map=None):
         with open('../logs/ID_To_AS.log', 'a', 0) as ASMap:
             probes = list()
 
-            for line in output:
-                if not line:
-                    continue
-                elements = line.split('\t')
-                probes.append(elements[0])  # append probe ID
-                ASMap.write(elements[0] + '\t' + elements[3] + '\n')
+            for el in output:
+                probes.append(el['id'])  # append probe ID
+                ASMap.write(str(el['id']) + '\t' + str(el['asn_v4']) + '\n')
                 if map is not None:  # save AS to dict
-                    map[elements[0]] = elements[3]
+                    map[el['id']] = el['asn_v4']
     except IOError:
         if verbose:
             print("error: Could not open file '../logs/ID_To_AS.log'\n")
