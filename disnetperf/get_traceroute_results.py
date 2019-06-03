@@ -141,12 +141,12 @@ class TracerouteMeasurement:
         :param currentTime: the timestamp to use in the name of the output file
         """
         try:
-            pointerToFile = open('../output/' + currentTime + '_scheduled_traceroutes.txt', 'a', 0)
+            pointerToFile = open('../output/' + currentTime + '_scheduled_traceroutes.txt', 'a')
         except IOError:
             print("error: Could not open/create file '../output/" + currentTime + "'_scheduled_traceroutes.txt'\n")
             return None
 
-        pointerToFile.write("PROBEID:\t" + self.probeID + '\n')
+        pointerToFile.write("PROBEID:\t" + str(self.probeID) + '\n')
         pointerToFile.write("TIMESTAMP:\t" + str(self.timestamp) + '\n')
         pointerToFile.write("NBHOPS:\t" + str(self.nbHops) + '\n')
 
@@ -157,9 +157,9 @@ class TracerouteMeasurement:
         for ip in self.IPInfos:
             IPs.append(ip[0])
             if ip[1] != '' and ip[1] != 'init':
-                pointerToFile.write("HOP:" + '\t' + ip[0] + '\t' + ip[1] + '\n')
+                pointerToFile.write("HOP:" + '\t' + str(ip[0]) + '\t' + str(ip[1]) + '\n')
             elif ip[1] != 'init':
-                pointerToFile.write("HOP:" + '\t' + ip[0] + '\n')
+                pointerToFile.write("HOP:" + '\t' + str(ip[0]) + '\n')
 
             if ip[0] == 'NA_TR':
                 res = 'NA_TR'
@@ -231,53 +231,40 @@ def retrieve_traceroute_results(filename, verbose):
         for udm in udms:
             is_success, resultInfo = AtlasResultsRequest(msm_id=udm).create()
             if not is_success:
-                print("Can't get udm-results...\n")
+                print("Can't get udm results...\n")
                 break
 
-            if not resultInfo.rstrip('\r\n'):
-                continue
-            resultInfo = resultInfo.split('\n')
+            for result in resultInfo:
+                if not result:
+                    continue
 
-            for line in resultInfo:
-                if line:
-                    if not line.startswith('\t'):  # first line of a result
-                        l = line.lstrip().split('\t')
-                        nbHop = int(l[5])
-                        probeID = l[1]
-                        srcIP = l[2]
-                        timestamp = l[0]
+                if verbose:
+                    print('Analysing traceroute from ' + result["src_addr"] + ' to ' + result["dst_addr"] + '...\n')
 
-                        if verbose:
-                            print('Analysing traceroute from ' + srcIP + ' to ' + dstIP + '...\n')
+                currentMeasurement = TracerouteMeasurement()
+                currentMeasurement.addProbeID(result["prb_id"])
+                currentMeasurement.addNbHops(len(result["result"]))
+                currentMeasurement.addTimestamp(result["timestamp"])
 
-                        currentMeasurement = TracerouteMeasurement()
-                        currentMeasurement.addProbeID(probeID)
-                        currentMeasurement.addNbHops(nbHop)
-                        currentMeasurement.addTimestamp(timestamp)
+                IPsToAnalyse.add(result["src_addr"])
+                currentMeasurement.addIPInfo(result["src_addr"], 'init')
 
-                        IPsToAnalyse.add(srcIP)
-                        currentMeasurement.addIPInfo(srcIP, 'init')
-                    else:
-                        l = line.lstrip().split('\t')
-                        ip = l[1]
-                        rtt = l[3]
-                        hopIndex = l[0]
-                        if rtt != '*':
-                            if ip != '*':
-                                currentMeasurement.addIPInfo(ip, rtt)
-                                IPsToAnalyse.add(ip)
-                            else:
-                                currentMeasurement.addIPInfo('NA_TR', rtt)
-                        else:
-                            if ip == '*':
-                                currentMeasurement.addIPInfo('NA_TR', '')
-                            else:
-                                currentMeasurement.addIPInfo(ip, '')
-                                IPsToAnalyse.add(ip)
+                for hop in result["result"]:
+                    hop = hop['result']
 
-                        # Finished analysing - store results for probe.
-                        if int(hopIndex) >= nbHop:
-                            measurementsToAnalyse.append(currentMeasurement)
+                    # If the first probe is invalid, consider all of them are invalid (if the destination is
+                    # unreachable, no reason it suddenly becomes reachable again in such a small amount of time).
+                    if 'x' in hop[0]:
+                        currentMeasurement.addIPInfo('NA_TR', '')
+                        continue
+
+                    # Take the minimum RTT values for each probe.
+                    rtt = min(r['rtt'] for r in hop)
+
+                    currentMeasurement.addIPInfo(hop[0]['from'], rtt)
+                    IPsToAnalyse.add(hop[0]['from'])
+
+                measurementsToAnalyse.append(currentMeasurement)
 
     # We will do the IP-to-AS mapping and store the results to a file.
     IPToASMapping = parseIP.mapIPtoAS(IPsToAnalyse, '../lib/GeoIPASNum2.csv', verbose)
@@ -302,7 +289,7 @@ if __name__ == '__main__':
     arguments = vars(parser.parse_args())
 
     if not any(arguments.values()):
-        parser.error('error: You must specify the filename containing measurement IDs!')
+        parser.error('You must specify the filename containing measurement IDs!')
         exit(1)
 
     if loadIPToPoPMapping('../lib/ip_to_pop_mapping.txt') is None:

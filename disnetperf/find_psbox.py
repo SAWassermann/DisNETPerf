@@ -392,7 +392,7 @@ if __name__ == '__main__':
     arguments = vars(parser.parse_args())
 
     if not arguments['targetIP'] and not arguments['filename']:
-        parser.error("error: You must either specify an IP or a filename of a file containing IPs!")
+        parser.error("You must either specify an IP or a filename of a file containing IPs!")
         exit(1)
 
     API_KEY = arguments['api-key']
