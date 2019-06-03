@@ -53,8 +53,12 @@ def launch_scheduled_traceroutes(destIP, probes, start, stop, interval, numberOf
     giveUp = False
     measurementIDs = []
 
+    probes = [int(p) for p in probes]
     probes = [probes[i:i + 500] for i in range(0, len(probes), 500)]
     for probesToUse in probes:
+        nProbesToUse = len(probesToUse)
+        probesToUse = ','.join(map(str, probesToUse))
+
         for _ in range(5):  # Perform at most 5 tries before giving up.
             # Create a request depending on the requested parameters.
             if stop:
@@ -64,14 +68,14 @@ def launch_scheduled_traceroutes(destIP, probes, start, stop, interval, numberOf
                 description = "Traceroute target={target} [{start}:{stop}]".format(target=destIP, start=startTime, 
                                                                                    stop=stop)
                 traceroute = Traceroute(af=4, target=destIP, description=description, protocol="ICMP")
-                source = AtlasSource(type="probes", value=probesToUse, requested=len(probesToUse))
+                source = AtlasSource(type="probes", value=probesToUse, requested=nProbesToUse)
                 request = AtlasCreateRequest(start_time=startTime, stop_time=stop, key=API_KEY,
                                              measurements=[traceroute], sources=[source], is_oneoff=False, interval=i)
 
             elif not start and not interval and not numberOfTraceroutes:
                 description = "Traceroute target={target}".format(target=destIP)
                 traceroute = Traceroute(af=4, target=destIP, description=description, protocol="ICMP")
-                source = AtlasSource(type="probes", value=probesToUse, requested=len(probesToUse))
+                source = AtlasSource(type="probes", value=probesToUse, requested=nProbesToUse)
                 request = AtlasCreateRequest(key=API_KEY, measurements=[traceroute], sources=[source], is_oneoff=True)
 
             elif numberOfTraceroutes and interval and not start:
@@ -81,7 +85,7 @@ def launch_scheduled_traceroutes(destIP, probes, start, stop, interval, numberOf
                 description = "Traceroute target={target} [{start}:{stop}]".format(target=destIP, start=startTime, 
                                                                                    stop=stopTime)
                 traceroute = Traceroute(af=4, target=destIP, description=description, protocol="ICMP")
-                source = AtlasSource(type="probes", value=probesToUse, requested=len(probesToUse))
+                source = AtlasSource(type="probes", value=probesToUse, requested=nProbesToUse)
                 request = AtlasCreateRequest(start_time=startTime, stop_time=stopTime, key=API_KEY, 
                                              measurements=[traceroute], sources=[source], is_oneoff=False, 
                                              interval=interval)
@@ -93,7 +97,7 @@ def launch_scheduled_traceroutes(destIP, probes, start, stop, interval, numberOf
                 description = "Traceroute target={target} [{start}:{stop}]".format(target=destIP, start=startTime, 
                                                                                    stop=stopTime)
                 traceroute = Traceroute(af=4, target=destIP, description=description, protocol="ICMP")
-                source = AtlasSource(type="probes", value=probesToUse, requested=len(probesToUse))
+                source = AtlasSource(type="probes", value=probesToUse, requested=nProbesToUse)
                 request = AtlasCreateRequest(start_time=startTime, stop_time=stopTime, key=API_KEY, 
                                              measurements=[traceroute], sources=[source], is_oneoff=False, 
                                              interval=INTERVAL_DEFAULT)
@@ -103,8 +107,8 @@ def launch_scheduled_traceroutes(destIP, probes, start, stop, interval, numberOf
 
             # Actually start the request.
             (is_success, response) = request.create()
-            if is_success and 'id' in response:
-                measurementIDs.append(response['id'])
+            if is_success and 'measurements' in response:
+                measurementIDs += response['measurements']
                 break
             else:
                 time.sleep(180)
@@ -113,7 +117,7 @@ def launch_scheduled_traceroutes(destIP, probes, start, stop, interval, numberOf
             break
 
     if not giveUp:
-        logFile.write('\t'.join(measurementIDs) + '\t' + destIP + '\n')
+        logFile.write('\t'.join(map(str, measurementIDs)) + '\t' + destIP + '\n')
     logFile.close()
 
 
