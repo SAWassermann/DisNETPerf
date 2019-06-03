@@ -82,6 +82,7 @@ Authors
 -------
 
 * Main author: **Sarah Wassermann** -  <sarah.wassermann@student.ulg.ac.be> - <http://wassermann.lu>
-* Contributors: 
+* Contributors:
+    * **Thibaut Cuvelier** - <http://tcuvelier.be>
     * **Pierdomenico Fiadino** - <http://userver.ftw.at/~fiadino>
     * **Pedro Casas** - <http://userver.ftw.at/~pcasas/>
