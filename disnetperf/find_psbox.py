@@ -54,9 +54,9 @@ def getSmallestPingProbe(measurementIDsDict, outputFileName):
                                 A line of the file has the format:
                                 "<target-IP> <RIPE probe ID> <RIPE probe IP> <RIPE probe AS> <min RTT> <Label> "
                                 <Label> is [RANDOM] when the candidate-boxes have been selected randomly,
-                                [NO_AS] if no AS could be associated to the target-IP and [OK] if the candidate-boxes were
-                                found either in the same AS as the target-IP or in neighbour ASes
-    :return: a dictionary whose keys are target-IPs and values are tuples in the form (<probeID>, <probeIP>, <probeAS>, <minRTT>)
+                                [NO_AS] if no AS could be associated to the target-IP and [OK] if the candidate boxes were
+                                found either in the same AS as the target IP or in neighbour ASes
+    :return: a dictionary whose keys are target IPs and values are tuples in the form (<probeID>, <probeIP>, <probeAS>, <minRTT>)
     """
     IPToPSBoxMap = {}
     for IP in measurementIDsDict:
@@ -386,7 +386,7 @@ if __name__ == '__main__':
                                                                                             help="1 if you want to enable the"
                                                                                               "recovery-mode, 0 otherwise."
                                                                                               "For more information about the "
-                                                                                              "recovery-mode, please have a look"
+                                                                                              "recovery-mode, please have a look "
                                                                                               "at the documentation in 'doc'")
 
     arguments = vars(parser.parse_args())

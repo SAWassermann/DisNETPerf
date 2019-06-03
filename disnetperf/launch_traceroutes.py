@@ -45,7 +45,7 @@ def launch_scheduled_traceroutes(destIP, probes, start, stop, interval, numberOf
     """
     currentTime = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-%H-%M-%S')
     try:
-        logFile = open('../logs/' + currentTime + '_current_scheduled_traceroutes.log', 'w', 0)
+        logFile = open('../logs/' + currentTime + '_current_scheduled_traceroutes.log', 'w')
     except IOError:
         print("error: Could not open/create '../logs/" + currentTime + "_current_scheduled_traceroutes.log'!\n")
         return
@@ -53,7 +53,7 @@ def launch_scheduled_traceroutes(destIP, probes, start, stop, interval, numberOf
     giveUp = False
     measurementIDs = []
 
-    probes = [probes[i:i + 500] for i in range(len(probes), 500)]
+    probes = [probes[i:i + 500] for i in range(0, len(probes), 500)]
     for probesToUse in probes:
         for _ in range(5):  # Perform at most 5 tries before giving up.
             # Create a request depending on the requested parameters.
@@ -64,14 +64,14 @@ def launch_scheduled_traceroutes(destIP, probes, start, stop, interval, numberOf
                 description = "Traceroute target={target} [{start}:{stop}]".format(target=destIP, start=startTime, 
                                                                                    stop=stop)
                 traceroute = Traceroute(af=4, target=destIP, description=description, protocol="ICMP")
-                source = AtlasSource(type="probes", value=probesToUse)
+                source = AtlasSource(type="probes", value=probesToUse, requested=len(probesToUse))
                 request = AtlasCreateRequest(start_time=startTime, stop_time=stop, key=API_KEY,
                                              measurements=[traceroute], sources=[source], is_oneoff=False, interval=i)
 
             elif not start and not interval and not numberOfTraceroutes:
                 description = "Traceroute target={target}".format(target=destIP)
                 traceroute = Traceroute(af=4, target=destIP, description=description, protocol="ICMP")
-                source = AtlasSource(type="probes", value=probesToUse)
+                source = AtlasSource(type="probes", value=probesToUse, requested=len(probesToUse))
                 request = AtlasCreateRequest(key=API_KEY, measurements=[traceroute], sources=[source], is_oneoff=True)
 
             elif numberOfTraceroutes and interval and not start:
@@ -81,7 +81,7 @@ def launch_scheduled_traceroutes(destIP, probes, start, stop, interval, numberOf
                 description = "Traceroute target={target} [{start}:{stop}]".format(target=destIP, start=startTime, 
                                                                                    stop=stopTime)
                 traceroute = Traceroute(af=4, target=destIP, description=description, protocol="ICMP")
-                source = AtlasSource(type="probes", value=probesToUse)
+                source = AtlasSource(type="probes", value=probesToUse, requested=len(probesToUse))
                 request = AtlasCreateRequest(start_time=startTime, stop_time=stopTime, key=API_KEY, 
                                              measurements=[traceroute], sources=[source], is_oneoff=False, 
                                              interval=interval)
@@ -93,7 +93,7 @@ def launch_scheduled_traceroutes(destIP, probes, start, stop, interval, numberOf
                 description = "Traceroute target={target} [{start}:{stop}]".format(target=destIP, start=startTime, 
                                                                                    stop=stopTime)
                 traceroute = Traceroute(af=4, target=destIP, description=description, protocol="ICMP")
-                source = AtlasSource(type="probes", value=probesToUse)
+                source = AtlasSource(type="probes", value=probesToUse, requested=len(probesToUse))
                 request = AtlasCreateRequest(start_time=startTime, stop_time=stopTime, key=API_KEY, 
                                              measurements=[traceroute], sources=[source], is_oneoff=False, 
                                              interval=INTERVAL_DEFAULT)
@@ -127,7 +127,7 @@ if __name__ == '__main__':
                                                                     "closest RIPE Atlas boxes should be launched to "
                                                                     "the specified destination. The file has to be stored "
                                                                     "in the folder 'input'")
-    parser.add_argument('-o', action="store", dest="targetIP", help="The IP for which you want to find the closest box (if not already specified)"
+    parser.add_argument('-o', action="store", dest="targetIP", help="The IP for which you want to find the closest box (if not already specified) "
                                                                     "and then launch traceroutes from this box to the specified destination-IP")
     parser.add_argument('-d', action="store", dest="destIP", help="IP which the traceroutes should be launched to", required=True)
     parser.add_argument('-b', action="store", dest="boxID", type=int, help="ID of the closest box to the IP indicated with -o")
@@ -137,7 +137,7 @@ if __name__ == '__main__':
                                                                                           "are computed before launching traceroutes",
                                                                                     required=True)
     parser.add_argument('-m', action="store", dest="nbTraceroutes", type=int, help="Total number of traceroutes to be launched")
-    parser.add_argument('-t', action="store", dest="interval", type=int, help="Time between two consecutive traceroutes (in seconds")
+    parser.add_argument('-t', action="store", dest="interval", type=int, help="Time between two consecutive traceroutes (in seconds)")
     parser.add_argument('-s', action="store", dest="start", type=int, help="Time when the first traceroute should be launched")
     parser.add_argument('-p', action="store", dest="stop", type=int, help="Time when traceroutes should be stopped")
 
@@ -145,35 +145,35 @@ if __name__ == '__main__':
 
     # check parameters - begin
     if not any(arguments.values()):
-        parser.error("error: You must at least specify an IP or a filename of a file containing IPs and a destination-IP!")
+        parser.error("You must at least specify an IP or a filename of a file containing IPs and a destination-IP!")
         exit(1)
-    elif not arguments['filename'] and not arguments['targetIP']:
-        parser.error("error: You must either specify an IP or a filename of a file containing IPs!")
+    elif not arguments['filename'] and not arguments['destIP']:
+        parser.error("You must either specify an IP or a filename of a file containing IPs!")
         exit(1)
     elif arguments['interval'] and not arguments['nbTraceroutes'] and not arguments['stop']:
-        parser.error("error: You must specify the number of traceroutes when setting an interval "
+        parser.error("You must specify the number of traceroutes when setting an interval "
                      "and not indicating the stop-time!")
         exit(1)
     elif arguments['targetIP'] and arguments['flag'] == 1 and not arguments['boxID']:
-        parser.error("error: You must specify the RIPE Atlas box to use when setting -f to 1!")
+        parser.error("You must specify the RIPE Atlas box to use when setting -f to 1!")
         exit(1)
     elif arguments['flag'] == 0 and arguments['targetIP'] and arguments['boxID']:
-        parser.error("error: You cannot specify the RIPE Atlas box to use when setting -f to 0!")
+        parser.error("You cannot specify the RIPE Atlas box to use when setting -f to 0!")
         exit(1)
     elif arguments['stop'] and arguments['nbTraceroutes']:
-        parser.error("error: You cannot specify the stop-time when indicating a number of traceroutes to be performed!")
+        parser.error("You cannot specify the stop-time when indicating a number of traceroutes to be performed!")
         exit(1)
     # check parameters - end
 
     API_KEY = arguments['api-key']
     flag = arguments['flag']
 
-    # when the user indicated an IP (-o), always go for it
+    # when the user indicated an IP (-o), always go for it (and ignore file passed via -n)
     if arguments['targetIP']:
-        targetIP = arguments['targetIP']
         if flag == 1:
             closestBox = str(arguments['boxID'])
         else:
+            targetIP = arguments['targetIP']
             closestBoxMap = ps.find_psboxes([targetIP], True)
             if closestBoxMap:
                 closestBox = closestBoxMap[targetIP]
