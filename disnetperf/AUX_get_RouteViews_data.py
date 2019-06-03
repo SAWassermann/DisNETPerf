@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-
-# Author: Sarah Wassermann <sarah.wassermann@student.ulg.ac.be>
+# Author: Sarah Wassermann <sarah@wassermann.lu>
 
 """
 This work is licensed under the Creative Commons Attribution-NoDerivatives 4.0 International License.
