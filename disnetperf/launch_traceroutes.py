@@ -8,6 +8,11 @@ To view a copy of this license, visit http://creativecommons.org/licenses/by-nd/
 PO Box 1866, Mountain View, CA 94042, USA.
 """
 
+from __future__ import print_function
+
+import sys
+sys.path.append('../')
+
 import argparse
 import datetime
 import time
