@@ -25,9 +25,9 @@ from ripe.atlas.cousteau import AtlasResultsRequest
 # keys: (start, end) tuple where start is the beginning of a path and end the end of the path
 # values: the inferred AS-path (in form of a list) between start and end via RouteViews data;
 # empty list of no info available
-hiddenTraceroutePathParts = dict()
+hiddenTraceroutePathParts = {}
 
-IPToPoPMapping = dict()
+IPToPoPMapping = {}
 # global vars - end
 
 
@@ -46,7 +46,7 @@ class TracerouteMeasurement:
         # if the IP-address is known, <IP> = given address; 'NA_TR' otherwise
         # <INFO> = 'init' if the tuple describes the source-IP address; the RTT if the analysed IP corresponds to the
         # one of a hop; the empty-string if RTT is unknown for a hop-IP
-        self.IPInfos = list()
+        self.IPInfos = []
 
         self.timestamp = -1 # the UNIX-timestamp corresponding to the time at which the measurement was launched
 
@@ -96,7 +96,7 @@ class TracerouteMeasurement:
                 if beginHiddenPathAS != '':
                     endHiddenPathAS = ASPath[idx]
                     endHiddenPathIdx = idx
-                    hiddenPart = list()
+                    hiddenPart = []
 
                     # the start-AS and the end-AS of this part with missing info are different. We try to complete it
                     if beginHiddenPathAS != endHiddenPathAS:
@@ -122,7 +122,7 @@ class TracerouteMeasurement:
                 else:
                     idx += 1
 
-        finalASPath = list()
+        finalASPath = []
         for path in ASPath:
             length = len(finalASPath)
             if length == 0 or finalASPath[length - 1] != path:
@@ -131,11 +131,11 @@ class TracerouteMeasurement:
 
     def saveToFile(self, ASMapping, currentTime):
         """
-        Writes the information about this measurement to the file '<timestamp>_scheduled_traceroutes.txt' in the output-folder.
-        For the exact format of the output-file, please check the documentation.
+        Writes the information about this measurement to the file '<timestamp>_scheduled_traceroutes.txt'
+        in the output folder. For the exact format of the output-file, please check the documentation.
         :param ASMapping:   a dictionary. A key is an IP and the corresponding value is the AS which it is located in.
-                            The IP2AS-mapping is done through a database provided by MaxMind
-        :param currentTime: the timestamp to use in the name of the output-file
+                            The IP-to-AS mapping is done through a database provided by MaxMind
+        :param currentTime: the timestamp to use in the name of the output file
         """
         try:
             pointerToFile = open('../output/' + currentTime + '_scheduled_traceroutes.txt', 'a', 0)
@@ -147,9 +147,9 @@ class TracerouteMeasurement:
         pointerToFile.write("TIMESTAMP:\t" + str(self.timestamp) + '\n')
         pointerToFile.write("NBHOPS:\t" + str(self.nbHops) + '\n')
 
-        ASes = list()
-        PoPs = list()
-        IPs = list()
+        ASes = []
+        PoPs = []
+        IPs = []
 
         for ip in self.IPInfos:
             IPs.append(ip[0])
@@ -182,7 +182,7 @@ class TracerouteMeasurement:
 def loadIPToPoPMapping(filename):
     """
     Fills the dictionary <IPToPoPMapping>. A key corresponds to an IP and the value to the PoP in which it is located.
-    The IP-to-PoP-mapping is performed through a database provided by the iPlane-project
+    The IP-to-PoP mapping is performed through a database provided by the iPlane project
     :param filename:    name of the file containing the mappings
     :return:            None if a problem occurred; True otherwise
     """
@@ -217,7 +217,7 @@ def retrieve_traceroute_results(filename, verbose):
         print("error: Could not open '" + filename + "'!\n")
         return None
 
-    measurementsToAnalyse = list()
+    measurementsToAnalyse = []
     IPsToAnalyse = set()
 
     for udmLine in udmFile:
@@ -272,11 +272,11 @@ def retrieve_traceroute_results(filename, verbose):
                                 currentMeasurement.addIPInfo(ip, '')
                                 IPsToAnalyse.add(ip)
 
-                        #finished analysing - store results for probe
+                        # Finished analysing - store results for probe.
                         if int(hopIndex) >= nbHop:
                             measurementsToAnalyse.append(currentMeasurement)
 
-    # We will do the IP2AS-mapping and store the results to a file
+    # We will do the IP-to-AS mapping and store the results to a file.
     IPToASMapping = parseIP.mapIPtoAS(IPsToAnalyse, '../lib/GeoIPASNum2.csv', verbose)
     if IPToASMapping is None:
         return None
@@ -294,12 +294,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Retrieve and store the results of the launched scheduled traceroutes')
 
     parser.add_argument('-v', action="version", version="version 1.0")
-    parser.add_argument('-n', action="store", dest="filename", help="name of the file the measurement-IDs are stored in")
+    parser.add_argument('-n', action="store", dest="filename", help="name of the file the measurement IDs are stored in")
 
     arguments = vars(parser.parse_args())
 
     if not any(arguments.values()):
-        parser.error('error: You must specify the filename containing measurement-IDs!')
+        parser.error('error: You must specify the filename containing measurement IDs!')
         exit(1)
 
     if loadIPToPoPMapping('../lib/ip_to_pop_mapping.txt') is None:

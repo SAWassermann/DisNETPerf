@@ -22,7 +22,7 @@ def parseProbeListOutput(output, verbose, map=None):
 
     try:
         with open('../logs/ID_To_AS.log', 'a', 1) as ASMap:
-            probes = list()
+            probes = []
 
             for el in output:
                 probes.append(el['id'])  # append probe ID

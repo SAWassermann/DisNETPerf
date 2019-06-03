@@ -20,7 +20,7 @@ def getASPath(start, end):
                     was found; en empty list otherwise
     """
     if not os.path.exists('../lib/routeviews_paths/' + start + '.txt'):
-        return list()
+        return []
 
     with open('../lib/routeviews_paths/' + start + '.txt', 'r') as file:
         for line in file:
@@ -29,4 +29,4 @@ def getASPath(start, end):
                 file.close()
                 return pathList
 
-    return list()
+    return []

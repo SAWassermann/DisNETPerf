@@ -22,14 +22,9 @@ import disnetperf.AUX_probe_analysing as pa
 import disnetperf.AUX_check_measurements as cm
 
 
-# constants - begin
-# should define the KEY to run RIPE Atlas (Key to create a new user defined measurement)
-API_KEY = 'XXXXXXXXXXXXXXXXXXXXXXXX'
-# constants - end
-
 # global vars - begin
-probeToASMap = dict()
-additionalInfoAboutMeasurements = dict()
+probeToASMap = {}
+additionalInfoAboutMeasurements = {}
 # global vars - end
 
 
@@ -59,10 +54,10 @@ def getSmallestPingProbe(measurementIDsDict, outputFileName):
                                 found either in the same AS as the target-IP or in neighbour ASes
     :return: a dictionary whose keys are target-IPs and values are tuples in the form (<probeID>, <probeIP>, <probeAS>, <minRTT>)
     """
-    IPToPSBoxMap = dict()
+    IPToPSBoxMap = {}
     for IP in measurementIDsDict:
         UDMs = measurementIDsDict[IP]
-        pingMeasurements = list()
+        pingMeasurements = []
 
         for udm in UDMs:
             for _ in range(5):
@@ -116,7 +111,7 @@ def find_psboxes(IPs, verbose, recovery=False):
 
     currentTime = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-%H-%M-%S')
     measurementIDs = set()
-    IPsToMeasurementIDs = dict()
+    IPsToMeasurementIDs = {}
     IPsAlreadyAnalysed = set()
 
     if recovery:  # recovery mode enabled
@@ -201,7 +196,7 @@ def find_psboxes(IPs, verbose, recovery=False):
     # open file containing RIPE Atlas boxes and load data - begin
     try:
         with open('../lib/probelist.txt', 'r') as plFile:
-            probeList = list()  # load list with all currently connected RIPE probes
+            probeList = []  # load list with all currently connected RIPE probes
             for line in plFile:
                 line = line.rstrip('\r\n')
                 if line:
@@ -224,7 +219,7 @@ def find_psboxes(IPs, verbose, recovery=False):
         logFile.close()
         return None
 
-    encounteredASes = dict()
+    encounteredASes = {}
 
     # launching measurements to find closest box - start
     for IP in IPToASMap:
@@ -401,7 +396,7 @@ if __name__ == '__main__':
     # if an IP is specified, we always go for the IP
     if arguments['targetIP']:
         targetIP = arguments['targetIP']
-        if checkIP(targetIP) is None:
+        if not checkIP(targetIP):
             print('error: The indicated IPs must be in the format <X.X.X.X>!\n')
             exit(3)
         targetIPs = [targetIP]
@@ -413,11 +408,11 @@ if __name__ == '__main__':
             exit(2)
 
         # load IPs from file
-        targetIPs = list()
+        targetIPs = []
         for line in IPfile:
             l = line.rstrip('\r\n')
             if l and not l.isspace():
-                if checkIP(l) is None:
+                if not checkIP(l):
                     print('error: The indicated IPs must be in the format <X.X.X.X>!\n')
                     IPfile.close()
                     exit(3)
