@@ -10,15 +10,16 @@ from __future__ import print_function
 
 import csv
 
+import ipaddress
+
 
 def IPToInt(ip):
     """
     Returns the integer corresponding th the IP address <ip>
-    :param ip:  a string representing an IP
+    :param ip:  a representation of an IP address (for instance, a string)
     :return:    <ip> converted into an integer
     """
-    parts = list(map(int, ip.split('.')))
-    return (16777216 * parts[0]) + (65536 * parts[1]) + (256 * parts[2]) + parts[3]
+    return int(ipaddress.ip_address(ip))
 
 
 def mapIPtoAS(IPListArg, IPtoASFilename, verbose):
@@ -30,7 +31,7 @@ def mapIPtoAS(IPListArg, IPtoASFilename, verbose):
     :param verbose:         if true, an error-message gets displayed when an internal problem occurs; otherwise not
     :return:                a dictionary with an IP as key and the corresponding AS as value
     """
-    IPtoASMap = dict()
+    IPtoASMap = {}
 
     try:
         with open(IPtoASFilename, 'r') as csvfile:

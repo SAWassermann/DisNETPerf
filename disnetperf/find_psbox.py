@@ -15,6 +15,7 @@ import datetime
 import time
 import os
 import random
+import ipaddress
 from ripe.atlas.cousteau import Ping, AtlasSource, AtlasCreateRequest, AtlasResultsRequest, ProbeRequest
 
 import disnetperf.AUX_IP_to_AS_map as IPToAS
@@ -31,14 +32,14 @@ additionalInfoAboutMeasurements = {}
 def checkIP(ip):
     """
     Checks whether the IP address <ip> has the correct format
-    :param ip: a string representing an IP
-    :return: <ip> converted into an integer, None if <ip> not a valid IP
+    :param ip: a representation of an IP (for instance, a string)
+    :return: True if the IP is valid (either IPv4 or IPv6), False otherwise
     """
     try:
-        parts = list(map(int, ip.split('.')))
-        return (16777216 * parts[0]) + (65536 * parts[1]) + (256 * parts[2]) + parts[3]
+        ipaddress.ip_address(ip)
+        return True
     except ValueError:
-        return None
+        return False
 
 
 def getSmallestPingProbe(measurementIDsDict, outputFileName):
